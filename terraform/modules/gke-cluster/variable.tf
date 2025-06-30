@@ -1,58 +1,6 @@
-variable "project_id" {
-  description = "The Google Cloud project ID"
-  type        = string
-}
-
 variable "region" {
   description = "The GCP region where resources will be deployed"
   type        = string
-}
-
-variable "network_name" {
-  description = "The name of the VPC network"
-  type        = string
-}
-
-variable "network_description" {
-  description = "Description for the VPC network"
-  type        = string
-}
-
-variable "subnet_name" {
-  description = "The name of the subnet"
-  type        = string
-}
-
-variable "primary_range" {
-  description = "The primary IP CIDR range for the subnet"
-  type        = string
-}
-
-variable "secondary_range_pods" {
-  description = "The secondary IP CIDR range for GKE pods"
-  type        = string
-}
-
-variable "secondary_range_services" {
-  description = "The secondary IP CIDR range for GKE services"
-  type        = string
-}
-
-variable "workload_identity_bindings" {
-  description = "Map of workload identity bindings for frontend, backend, database, and monitoring components"
-  type = map(object({
-    k8s_namespace            = string
-    k8s_service_account_name = string
-    gcp_service_account_name = string
-    roles                    = list(string)
-  }))
-  default = {}
-}
-
-variable "enable_workload_identity" {
-  description = "Enable workload identity bindings (set to false initially, true after GKE cluster exists)"
-  type        = bool
-  default     = false
 }
 
 variable "cluster_name" {
@@ -70,6 +18,11 @@ variable "max_node_count" {
   description = "Maximum number of nodes in the GKE node pool for autoscaling"
   type        = number
   default     = 10
+}
+
+variable "machine_type" {
+  description = "The machine type to use for GKE nodes"
+  type        = string
 }
 
 variable "disk_size_gb" {
@@ -92,8 +45,23 @@ variable "deletion_protection" {
   type        = bool
 }
 
-variable "machine_type" {
-  description = "The machine type to use for GKE nodes"
+variable "primary_range" {
+  description = "The primary IP CIDR range for the subnet"
+  type        = string
+}
+
+variable "network_name" {
+  description = "Name of existing VPC network"
+  type        = string
+}
+
+variable "subnet_name" {
+  description = "Name of existing subnet"
+  type        = string
+}
+
+variable "service_account_email" {
+  description = "Email of the service account for GKE nodes"
   type        = string
 }
 
@@ -127,8 +95,23 @@ variable "tag_monitoring" {
   default     = "monitoring"
 }
 
+variable "pods_range_name" {
+  description = "The name of the secondary range for pods"
+  type        = string
+}
+
+variable "services_range_name" {
+  description = "The name of the secondary range for services"
+  type        = string
+}
+
 variable "environment" {
   description = "The environment name (e.g., dev, staging, prod)"
+  type        = string
+}
+
+variable "project_id" {
+  description = "The Google Cloud project ID"
   type        = string
 }
 

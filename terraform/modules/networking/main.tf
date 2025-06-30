@@ -40,7 +40,7 @@ resource "google_compute_firewall" "load_balancer" {
   }
 
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["frontend"]
+  target_tags   = [var.tag_frontend]
 
   direction = "INGRESS"
   priority  = 1000
@@ -57,8 +57,8 @@ resource "google_compute_firewall" "frontend_to_backend" {
     ports    = ["5173"]
   }
 
-  source_tags = ["frontend"]
-  target_tags = ["backend"]
+  source_tags = [var.tag_frontend]
+  target_tags = [var.tag_backend]
 
   direction = "INGRESS"
   priority  = 1000
@@ -75,8 +75,8 @@ resource "google_compute_firewall" "backend_to_db" {
     ports    = ["5432"]
   }
 
-  source_tags = ["backend"]
-  target_tags = ["postgresql"]
+  source_tags = [var.tag_backend]
+  target_tags = [var.tag_postgresql]
 
   direction = "INGRESS"
   priority  = 1000
@@ -93,8 +93,8 @@ resource "google_compute_firewall" "monitoring" {
     ports    = ["9090", "9091"]
   }
 
-  source_tags = ["monitoring"]
-  target_tags = ["gke-node"]
+  source_tags = [var.tag_monitoring]
+  target_tags = [var.tag_gke_node]
 
   direction = "INGRESS"
   priority  = 1000
@@ -117,7 +117,7 @@ resource "google_compute_firewall" "health_checks" {
     "130.211.0.0/22"
   ]
 
-  target_tags = ["gke-node"]
+  target_tags = [var.tag_gke_node]
 
   direction = "INGRESS"
   priority  = 1000
@@ -145,7 +145,7 @@ resource "google_compute_firewall" "internal_communication" {
   source_ranges = [var.primary_range]
 
 
-  target_tags = ["gke-node"]
+  target_tags = [var.tag_gke_node]
 
   direction = "INGRESS"
   priority  = 1000
@@ -163,7 +163,7 @@ resource "google_compute_firewall" "deny_public_db" {
   }
 
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["postgresql"]
+  target_tags   = [var.tag_postgresql]
 
   direction = "INGRESS"
   priority  = 900
@@ -181,7 +181,7 @@ resource "google_compute_firewall" "deny_public_backend" {
   }
 
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["backend"]
+  target_tags   = [var.tag_backend]
 
   direction = "INGRESS"
   priority  = 900
