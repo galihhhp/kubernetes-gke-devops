@@ -115,7 +115,7 @@ variable "project_id" {
   type        = string
 }
 
-variable "admin_ip_cidr" {
-  description = "Admin IP CIDR for master authorized networks"
+variable "bastion_internal_ip" {
   type        = string
+  description = "Internal IP of the bastion VM to be added to master_authorized_networks_config"
 }

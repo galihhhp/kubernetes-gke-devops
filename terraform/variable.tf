@@ -131,8 +131,3 @@ variable "environment" {
   description = "The environment name (e.g., dev, prod)"
   type        = string
 }
-
-variable "admin_ip_cidr" {
-  description = "Admin IP CIDR for master authorized networks"
-  type        = string
-}

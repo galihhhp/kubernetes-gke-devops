@@ -74,3 +74,15 @@ resource "google_project_iam_member" "gke_node_service_account_roles" {
   role    = each.key
   member  = "serviceAccount:${google_service_account.gke_node_service_account.email}"
 }
+
+resource "google_project_iam_member" "iap_tunnel_user" {
+  project = var.project_id
+  role    = "roles/iap.tunnelResourceAccessor"
+  member  = var.iap_user
+}
+
+resource "google_project_iam_member" "oslogin_user" {
+  project = var.project_id
+  role    = "roles/compute.osLogin"
+  member  = var.iap_user
+}

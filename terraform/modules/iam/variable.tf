@@ -25,6 +25,11 @@ variable "enable_workload_identity" {
   default     = false
 }
 
+variable "iap_user" {
+  type        = string
+  description = "User email to grant IAP tunnel and OS Login access for bastion VM"
+}
+
 
 
 

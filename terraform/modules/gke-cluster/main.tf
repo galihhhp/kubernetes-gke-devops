@@ -56,8 +56,8 @@ resource "google_container_cluster" "main" {
     }
 
     cidr_blocks {
-      cidr_block   = var.admin_ip_cidr
-      display_name = "${var.environment}-vm"
+      cidr_block   = var.bastion_internal_ip
+      display_name = "bastion-vm"
     }
   }
 
@@ -82,7 +82,7 @@ resource "google_container_node_pool" "main_node" {
   name     = var.node_pool_name
   location = var.region
   cluster  = google_container_cluster.main.name
-  
+
   autoscaling {
     min_node_count = var.min_node_count
     max_node_count = var.max_node_count
