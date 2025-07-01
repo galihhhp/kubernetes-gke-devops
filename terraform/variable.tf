@@ -128,7 +128,7 @@ variable "tag_monitoring" {
 }
 
 variable "environment" {
-  description = "The environment name (e.g., dev, staging, prod)"
+  description = "The environment name (e.g., dev, prod)"
   type        = string
 }
 

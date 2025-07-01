@@ -30,6 +30,32 @@ resource "google_compute_subnetwork" "subnet" {
   }
 }
 
+resource "google_compute_router" "router" {
+  name    = "${var.network_name}-router"
+  region  = var.region
+  network = google_compute_network.vpc_network.id
+}
+
+resource "google_compute_address" "nat_ip" {
+  name   = "${var.network_name}-nat-ip"
+  region = var.region
+}
+
+resource "google_compute_router_nat" "nat" {
+  name   = "${var.network_name}-nat"
+  router = google_compute_router.router.name
+  region = google_compute_router.router.region
+
+  nat_ip_allocate_option             = "MANUAL_ONLY"
+  nat_ips                            = [google_compute_address.nat_ip.self_link]
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+
+  log_config {
+    enable = true
+    filter = "ALL"
+  }
+}
+
 resource "google_compute_firewall" "load_balancer" {
   name    = "allow-lb-to-frontend"
   network = google_compute_network.vpc_network.name
@@ -39,8 +65,11 @@ resource "google_compute_firewall" "load_balancer" {
     ports    = ["3000"]
   }
 
-  source_ranges = ["0.0.0.0/0"]
-  target_tags   = [var.tag_frontend]
+  source_ranges = [
+    "130.211.0.0/22",
+    "35.191.0.0/16"
+  ]
+  target_tags = [var.tag_frontend]
 
   direction = "INGRESS"
   priority  = 1000

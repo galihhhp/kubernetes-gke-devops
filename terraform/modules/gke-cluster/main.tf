@@ -17,6 +17,32 @@ resource "google_container_cluster" "main" {
   deletion_protection      = var.deletion_protection
   logging_service          = "logging.googleapis.com/kubernetes"
   monitoring_service       = "monitoring.googleapis.com/kubernetes"
+  enable_shielded_nodes    = true
+
+  network_policy {
+    enabled = true
+  }
+
+  cluster_autoscaling {
+    enabled = true
+    resource_limits {
+      resource_type = "cpu"
+      minimum       = 2
+      maximum       = 10
+    }
+
+    resource_limits {
+      resource_type = "memory"
+      minimum       = 4
+      maximum       = 20
+    }
+  }
+
+  private_cluster_config {
+    enable_private_nodes    = true
+    enable_private_endpoint = true
+    master_ipv4_cidr_block  = "172.16.0.0/28"
+  }
 
   ip_allocation_policy {
     cluster_secondary_range_name  = var.pods_range_name
@@ -31,7 +57,7 @@ resource "google_container_cluster" "main" {
 
     cidr_blocks {
       cidr_block   = var.admin_ip_cidr
-      display_name = "admin-access"
+      display_name = "${var.environment}-vm"
     }
   }
 
@@ -52,11 +78,11 @@ resource "google_container_cluster" "main" {
   }
 }
 
-resource "google_container_node_pool" "main_nodes" {
+resource "google_container_node_pool" "main_node" {
   name     = var.node_pool_name
   location = var.region
   cluster  = google_container_cluster.main.name
-
+  
   autoscaling {
     min_node_count = var.min_node_count
     max_node_count = var.max_node_count
@@ -74,6 +100,11 @@ resource "google_container_node_pool" "main_nodes" {
 
     workload_metadata_config {
       mode = "GKE_METADATA"
+    }
+
+    labels = {
+      "node-type" = "standard"
+      "workload"  = "application"
     }
   }
 }
