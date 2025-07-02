@@ -1,0 +1,37 @@
+name: "Terraform Apply"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  networking:
+    runs-on: ubuntu-latest
+    env:
+      GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY_PROD }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY_PROD }}
+          export_default_credentials: true
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Write prod.tfvars from secret
+        run: |
+          echo "$PROD_TFVARS" > prod.tfvars
+        env:
+          PROD_TFVARS: ${{ secrets.PROD_TFVARS }}
+      - name: Check prod.tfvars exists
+        run: |
+          if [ ! -s prod.tfvars ]; then
+            echo "prod.tfvars is missing or empty!"
+            exit 1
+          else
+            echo "prod.tfvars exists and is not empty."
+          fi
