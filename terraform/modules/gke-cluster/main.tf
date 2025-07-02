@@ -9,7 +9,7 @@ data "google_compute_subnetwork" "subnet" {
 
 resource "google_container_cluster" "main" {
   name                     = var.cluster_name
-  location                 = var.region
+  location                 = "${var.region}-a"
   remove_default_node_pool = true
   initial_node_count       = 1
   network                  = data.google_compute_network.network.self_link
@@ -27,14 +27,13 @@ resource "google_container_cluster" "main" {
     enabled = true
     resource_limits {
       resource_type = "cpu"
-      minimum       = 2
-      maximum       = 10
+      minimum       = 6
+      maximum       = 20
     }
-
     resource_limits {
       resource_type = "memory"
-      minimum       = 4
-      maximum       = 20
+      minimum       = 12
+      maximum       = 30
     }
   }
 
@@ -80,7 +79,7 @@ resource "google_container_cluster" "main" {
 
 resource "google_container_node_pool" "main_node" {
   name     = var.node_pool_name
-  location = var.region
+  location = "${var.region}-a"
   cluster  = google_container_cluster.main.name
 
   autoscaling {

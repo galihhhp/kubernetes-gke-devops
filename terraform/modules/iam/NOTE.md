@@ -1,64 +1,101 @@
-# NOTE
+# Field-by-Field Explanation of main.tf (IAM Module)
 
-## Why This Setup? (Deep Dive: Resource, Field, Variable, Output)
+This document explains every field in main.tf, in the exact order they appear, in English, with the why, effect, trade-off, and analogy for each one.
 
-This module is designed for granular, least-privilege IAM in GCP. Here's the why for every variable, resource, field, and output, with analogies for each.
+---
 
-### Variables
+## locals { service_account_roles = ... }
 
-- **project_id**: Specifies which GCP project to manage. Analogy: Like picking which building you're setting up security for.
-- **environment**: Used for naming and scoping (dev, prod). Analogy: Like labeling badges for "staff" vs "VIP."
-- **workload_identity_bindings**: Map of all app components and their K8s/GCP service account mapping and roles. Analogy: Like a master list of who needs access to which rooms, and what keys they get.
-  - **k8s_namespace**: Which K8s namespace the workload runs in. Analogy: Like which department in a company.
-  - **k8s_service_account_name**: The K8s service account name. Analogy: Like the employee's name in the department.
-  - **gcp_service_account_name**: The GCP service account name. Analogy: Like the badge ID for the building.
-  - **roles**: List of GCP IAM roles to grant. Analogy: Like a list of doors the badge can open.
-- **enable_workload_identity**: Whether to enable Workload Identity bindings. Analogy: Like turning on a new badge system after everyone's ready.
+- Why: Makes it easier to assign roles programmatically.
+- Effect: Simplifies mapping, reduces manual errors.
+- Trade-off: Slightly more complex logic.
+- Analogy: Like making a master checklist for the security team to issue all badges efficiently.
 
-### Locals
+## google_service_account "workload_service_accounts"
 
-- **service_account_roles**: This local block flattens the nested map of workload identity bindings into a flat map of (component, role) pairs. The `for` expressions iterate over each component and each role, and `merge([...])` combines all the resulting maps into one. This makes it easy to assign IAM roles to each service account in a single loop later. Analogy: Imagine you have a list of departments, and each department has a list of rooms they need access to. This block creates a master checklist where each line says, "Person from Department X needs access to Room Y," so the security team can issue all badges efficiently without missing any combinations.
+- Why: Each component gets its own identity for least privilege.
+- Effect: Granular access, easy to audit and revoke.
+- Trade-off: More service accounts to manage.
+- Analogy: Every department gets its own badge printer.
+- account_id: The unique name for the service account. Like a badge ID.
+- display_name: Human-readable name. Like a name tag on the badge.
+- description: Explains the purpose. Like a note on the badge for security staff.
 
-  **Step-by-step logic for `locals.service_account_roles`:**
+## google_project_iam_member "workload_service_account_roles"
 
-  1. Start with the `workload_identity_bindings` map, where each key is a component (e.g., frontend) and each value contains a list of roles.
-  2. For each component, loop through its list of roles.
-  3. For every (component, role) pair, create a map entry with a unique key ("component-role") and a value containing the component and role.
-  4. Use `merge([...])` to combine all these small maps into one big flat map.
-  5. The result: a single map where each key is a unique (component-role) string, and each value is an object with the component and role. This is used for easy, flat iteration when assigning IAM roles.
+- Why: Ensures each account only gets the access it needs.
+- Effect: Least privilege, granular control.
+- Trade-off: Mapping errors can cause over/under-permission.
+- Analogy: Each badge is programmed for the right doors.
+- project: Which building the badge works in.
+- role: Which doors it opens.
+- member: Who gets the badge.
 
-  Analogy: Imagine you have a table where each row is a department, and each cell in that row lists the rooms that department needs access to. This logic goes cell by cell, writing a new row for every department-room combo, so you end up with a long, flat checklist for the security team to process badge access efficiently.
+## google_service_account_iam_binding "workload_identity_bindings"
 
-### Resources
+- Why: Allows K8s workloads to use GCP APIs securely, keyless.
+- Effect: Keyless, auditable, secure access.
+- Trade-off: More complex setup.
+- Analogy: Lets an employee use their department badge to open building doors, but only while on shift.
+- service_account_id: Which badge to bind.
+- role: The binding role (always Workload Identity User).
+- members: The K8s identity allowed to use the badge.
 
-- **google_service_account.workload_service_accounts**
-  - **for_each**: One per component. Analogy: Every department gets its own badge printer.
-  - **account_id**: Unique per component. Analogy: Each badge has a unique number.
-  - **display_name/description**: Human-friendly for auditing. Analogy: Like printing the employee's name and role on the badge.
-- **google_project_iam_member.workload_service_account_roles**
-  - **for_each**: One per (component, role) pair. Analogy: Each badge is programmed for the right doors.
-  - **project/role/member**: Assigns the right permissions to the right badge in the right building.
-- **google_service_account_iam_binding.workload_identity_bindings**
-  - **for_each**: Only if enabled. Analogy: Only issue new badges when the new system is live.
-  - **service_account_id/role/members**: Binds K8s and GCP identities. Analogy: Lets an employee use their department badge to open building doors, but only while on shift.
-- **google_service_account.cicd_service_account**
-  - **account_id/display_name/description**: Dedicated badge for automation. Analogy: Like a robot with a special badge for deliveries and maintenance.
-- **google_project_iam_member.cicd_service_account_roles**
-  - **for_each**: One per required CI/CD permission. Analogy: Robot only gets access to the rooms it needs.
-- **google_service_account.gke_node_service_account**
-  - **account_id/display_name/description**: Badge for GKE nodes. Analogy: Like giving cleaning staff a badge for supply closets and break rooms.
-- **google_project_iam_member.gke_node_service_account_roles**
-  - **for_each**: One per logging/monitoring permission. Analogy: Cleaning staff can only access the logbook and supply closet, not the safe.
+## google_service_account "cicd_service_account"
 
-### Outputs
+- Why: CI/CD needs its own identity for automation.
+- Effect: Secure, auditable automation.
+- Trade-off: Another account to manage.
+- Analogy: Like a robot with a special badge for deliveries and maintenance.
 
-- **cicd_service_account_email/name/id**: For automation to use the right badge. Analogy: Like giving the robot's badge info to the front desk.
-- **workload_service_accounts**: Map of all app badges. Analogy: The full staff directory for security.
-- **frontend_service_account_email/backend_service_account_email/database_service_account_email/monitoring_service_account_email**: Quick access to key badges. Analogy: Like a list of department heads.
-- **workload_identity_bindings**: Shows which K8s accounts are linked to which GCP badges. Analogy: Like a log of who can use which badge, and when.
-- **workload_identity_enabled**: Whether the new badge system is on. Analogy: Is the new security system live?
-- **gke_node_service_account_email/id**: For GKE nodes to use the right badge. Analogy: Like giving the cleaning staff their own badge and tracking it.
+## google_project_iam_member "cicd_service_account_roles"
 
-## Analogy
+- Why: Least privilege for automation.
+- Effect: Secure, auditable automation.
+- Trade-off: If you miss a role, automation might break.
+- Analogy: Robot only gets access to the rooms it needs.
 
-This setup is like running a high-security building: every person, robot, and department gets a custom badge, only the right doors open, and you have a full log of who can go where, when, and why. Every field, variable, and output is about making access clear, auditable, and safe.
+## google_service_account "gke_node_service_account"
+
+- Why: GKE nodes need their own identity for logging, monitoring, etc.
+- Effect: Secure, auditable node operations.
+- Trade-off: Another account to manage.
+- Analogy: Like giving cleaning staff a badge for supply closets and break rooms.
+
+## google_project_iam_member "gke_node_service_account_roles"
+
+- Why: Least privilege for nodes.
+- Effect: Secure, auditable node operations.
+- Trade-off: If you miss a role, node features might break.
+- Analogy: Cleaning staff can only access the logbook and supply closet, not the safe.
+
+## google_project_iam_member "iap_tunnel_user"
+
+- Why: Only trusted users can access the bastion via IAP.
+- Effect: Secure, auditable access.
+- Trade-off: If you forget to add a user, they can't access.
+- Analogy: Like giving a trusted guard a secret tunnel key.
+
+## google_project_iam_member "oslogin_user"
+
+- Why: Only trusted users can SSH via IAM.
+- Effect: Secure, auditable SSH access.
+- Trade-off: If you forget to add a user, they can't SSH.
+- Analogy: Like giving a guard a secure login badge.
+
+---
+
+## Summary Table
+
+| Resource/Field                        | Why                                                             | Effect                                     | Trade-off                                       | Analogy                                |
+| ------------------------------------- | --------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------- | -------------------------------------- |
+| locals.service_account_roles          | Makes it easier to assign roles programmatically.               | Simplifies mapping, reduces manual errors. | Slightly more complex logic.                    | Master checklist for badges            |
+| google_service_account.workload...    | Each component gets its own identity for least privilege.       | Granular access, easy to audit and revoke. | More service accounts to manage.                | Badge printer per department           |
+| google_project_iam_member.workload... | Ensures each account only gets the access it needs.             | Least privilege, granular control.         | Mapping errors can cause over/under-permission. | Badge programmed for right doors       |
+| google_service_account_iam_binding... | Allows K8s workloads to use GCP APIs securely, keyless.         | Keyless, auditable, secure access.         | More complex setup.                             | Badge works only while on shift        |
+| google_service_account.cicd...        | CI/CD needs its own identity for automation.                    | Secure, auditable automation.              | Another account to manage.                      | Robot with special badge               |
+| google_project_iam_member.cicd...     | Least privilege for automation.                                 | Secure, auditable automation.              | If you miss a role, automation might break.     | Robot only gets needed rooms           |
+| google_service_account.gke_node...    | GKE nodes need their own identity for logging, monitoring, etc. | Secure, auditable node operations.         | Another account to manage.                      | Cleaning staff badge                   |
+| google_project_iam_member.gke_node... | Least privilege for nodes.                                      | Secure, auditable node operations.         | If you miss a role, node features might break.  | Cleaning staff only gets supply closet |
+| google_project_iam_member.iap_tunnel  | Only trusted users can access the bastion via IAP.              | Secure, auditable access.                  | If you forget to add a user, they can't access. | Guard with secret tunnel key           |
+| google_project_iam_member.oslogin...  | Only trusted users can SSH via IAM.                             | Secure, auditable SSH access.              | If you forget to add a user, they can't SSH.    | Guard with secure login badge          |

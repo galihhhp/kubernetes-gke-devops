@@ -1,37 +1,57 @@
-# NOTE
+# Field-by-Field Explanation of main.tf (Bastion Module)
 
-## Why This Setup? (Resource-by-Resource)
+This document explains every field in main.tf, in the exact order they appear, in English, with the why, effect, trade-off, and analogy for each one.
 
-This module provisions a secure, minimal bastion host for controlled access to your cloud resources. Here's the reasoning for every variable, resource, and output, with analogies:
+---
 
-- **Variables**
+## google_compute_instance "bastion"
 
-  - **name**: Name of the bastion VM. Analogy: Like naming your guardhouse at the city gate.
-  - **machine_type**: VM size. Analogy: Choosing the size of your guardhouse—enough for the guards, but not a palace.
-  - **zone**: GCP zone for the VM. Analogy: Picking which city district your guardhouse is in.
-  - **image**: Boot disk image. Analogy: The blueprint for building the guardhouse—what tools and furniture are inside.
-  - **disk_size_gb**: Boot disk size. Analogy: How much storage space the guards have for their gear.
-  - **network**: VPC network. Analogy: Which city walls the guardhouse is built into.
-  - **subnetwork**: Subnet for the VM. Analogy: The specific street or block for the guardhouse.
-  - **metadata**: Extra metadata for the VM. Analogy: Special instructions or notes for the guards.
+- name:
+  - Why: Easy to find and audit.
+  - Effect: Clear identification.
+  - Trade-off: None.
+  - Analogy: Naming your guardhouse at the city gate.
+- machine_type:
+  - Why: Cost-efficient, enough for admin tasks.
+  - Effect: Low cost, sufficient for SSH/IAP.
+  - Trade-off: Not for heavy workloads.
+  - Analogy: Choosing a small guardhouse—enough for the guards, not a palace.
+- zone:
+  - Why: Proximity to resources, compliance.
+  - Effect: Lower latency, local data.
+  - Trade-off: Must match other resources.
+  - Analogy: Picking which city district your guardhouse is in.
+- boot_disk { initialize_params { image, size } }:
+  - Why: Stable, secure OS, just enough storage.
+  - Effect: Fewer bugs, lower cost, less attack surface.
+  - Trade-off: Can't store large files.
+  - Analogy: The blueprint and storage space for the guardhouse—what tools and supplies are inside.
+- network_interface { network, subnetwork, access_config {} }:
+  - Why: Ensures correct placement and remote access.
+  - Effect: Proper isolation, can SSH/IAP in.
+  - Trade-off: Public IP is a risk if not secured.
+  - Analogy: Placing the guardhouse at the city wall with a door to the outside.
+- tags = ["bastion"]:
+  - Why: Easy to manage access and security.
+  - Effect: Can target firewall rules.
+  - Trade-off: If you forget to set tags in firewall, access can break.
+  - Analogy: Marking the guardhouse for special security rules.
+- metadata = merge(var.metadata, { enable-oslogin = "TRUE", startup-script = file("${path.module}/bastion_startup.sh") }):
+  - Why: Secure, auditable access, ready-to-use VM.
+  - Effect: Only trusted users can SSH, tools are pre-installed.
+  - Trade-off: If script fails, manual fix needed.
+  - Analogy: Giving guards a secure login system and a morning checklist.
 
-- **Resource: google_compute_instance.bastion**
+---
 
-  - Provisions the bastion VM with a public IP, minimal tags, and a startup script. Analogy: Building a secure guardhouse with a phone line (public IP) and a checklist for the guards (startup script).
-  - **boot_disk**: Uses the specified image and size. Analogy: Stocking the guardhouse with the right supplies.
-  - **network_interface**: Connects to the right network/subnet and enables external access. Analogy: Placing the guardhouse at the city wall with a door to the outside.
-  - **tags**: Used for firewall rules. Analogy: Marking the guardhouse for special security rules.
-  - **metadata**: Enables OS Login and runs the startup script. Analogy: Giving guards a secure login system and a morning routine.
+## Summary Table
 
-- **Startup Script (bastion_startup.sh)**
-
-  - Installs essential tools (gcloud, kubectl, git, htop, etc.). Analogy: Equipping the guards with radios, keys, and maps so they can do their job securely and efficiently.
-
-- **Outputs**
-  - **name, machine_type, zone, image, disk_size_gb, network, subnetwork, metadata**: Expose all key VM details for automation and auditing. Analogy: Like keeping a record of the guardhouse's specs for city planners.
-  - **internal_ip**: Internal IP for private access. Analogy: The guardhouse's address inside the city walls.
-  - **external_ip**: Public IP for secure remote access. Analogy: The guardhouse's phone number for trusted visitors.
-
-## Analogy
-
-This setup is like building a secure, well-equipped guardhouse at the edge of your city: only trusted guards (users) can enter, they have all the tools they need, and you control exactly where it's built and how it's accessed. Every field, variable, and output is about making access clear, auditable, and safe—without giving away the keys to the whole city.
+| Field/Resource    | Why                                    | Effect                          | Trade-off                   | Analogy                              |
+| ----------------- | -------------------------------------- | ------------------------------- | --------------------------- | ------------------------------------ |
+| name              | Easy to find and audit                 | Clear identification            | None                        | Naming your guardhouse               |
+| machine_type      | Cost-efficient, enough for admin       | Low cost, sufficient for SSH    | Not for heavy workloads     | Small guardhouse, not a palace       |
+| zone              | Proximity to resources, compliance     | Lower latency, local data       | Must match resources        | Picking city district                |
+| boot_disk         | Stable, secure OS, just enough storage | Fewer bugs, low cost, less risk | Can't store large files     | Blueprint and storage for guardhouse |
+| network_interface | Ensures placement and remote access    | Proper isolation, SSH/IAP       | Public IP is a risk         | Door to the outside                  |
+| tags              | Easy to manage access/security         | Can target firewall rules       | Missed tag breaks access    | Marking for special security         |
+| metadata          | Secure, auditable, ready-to-use        | Trusted SSH, tools installed    | Script failure = manual fix | Secure login, morning checklist      |
