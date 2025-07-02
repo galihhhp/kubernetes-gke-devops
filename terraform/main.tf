@@ -1,8 +1,5 @@
 terraform {
-  backend "gcs" {
-    bucket = "tf-k8s-state"
-    prefix = "terraform/k8s"
-  }
+  backend "gcs" {}
 }
 
 provider "google" {
