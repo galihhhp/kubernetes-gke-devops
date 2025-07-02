@@ -23,7 +23,10 @@ jobs:
         run: echo "$PROD_TFVARS" > prod.tfvars
         env:
           PROD_TFVARS: ${{ secrets.PROD_TFVARS }}
+        working-directory: terraform
       - name: Terraform Init
         run: terraform init -backend-config=backend-prod.hcl
+        working-directory: terraform
       - name: Terraform Apply
         run: terraform apply -auto-approve -var-file=prod.tfvars -target=module.network
+        working-directory: terraform
