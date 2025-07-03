@@ -57,7 +57,7 @@ resource "google_compute_router_nat" "nat" {
 }
 
 resource "google_compute_firewall" "load_balancer" {
-  name    = "allow-lb-to-frontend"
+  name    = "${var.environment}-allow-lb-to-frontend"
   network = google_compute_network.vpc_network.name
 
   allow {
@@ -78,7 +78,7 @@ resource "google_compute_firewall" "load_balancer" {
 }
 
 resource "google_compute_firewall" "frontend_to_backend" {
-  name    = "allow-frontend-to-backend"
+  name    = "${var.environment}-allow-frontend-to-backend"
   network = google_compute_network.vpc_network.name
 
   allow {
@@ -96,7 +96,7 @@ resource "google_compute_firewall" "frontend_to_backend" {
 }
 
 resource "google_compute_firewall" "backend_to_db" {
-  name    = "allow-backend-to-db"
+  name    = "${var.environment}-allow-backend-to-db"
   network = google_compute_network.vpc_network.name
 
   allow {
@@ -114,7 +114,7 @@ resource "google_compute_firewall" "backend_to_db" {
 }
 
 resource "google_compute_firewall" "monitoring" {
-  name    = "allow-monitoring"
+  name    = "${var.environment}-allow-monitoring"
   network = google_compute_network.vpc_network.name
 
   allow {
@@ -132,7 +132,7 @@ resource "google_compute_firewall" "monitoring" {
 }
 
 resource "google_compute_firewall" "health_checks" {
-  name    = "allow-health-checks"
+  name    = "${var.environment}-allow-health-checks"
   network = google_compute_network.vpc_network.name
 
   allow {
@@ -155,7 +155,7 @@ resource "google_compute_firewall" "health_checks" {
 }
 
 resource "google_compute_firewall" "internal_communication" {
-  name    = "allow-internal"
+  name    = "${var.environment}-allow-internal"
   network = google_compute_network.vpc_network.name
 
   allow {
@@ -183,7 +183,7 @@ resource "google_compute_firewall" "internal_communication" {
 }
 
 resource "google_compute_firewall" "deny_public_db" {
-  name    = "deny-public-to-db"
+  name    = "${var.environment}-deny-public-to-db"
   network = google_compute_network.vpc_network.name
 
   deny {
@@ -201,7 +201,7 @@ resource "google_compute_firewall" "deny_public_db" {
 }
 
 resource "google_compute_firewall" "deny_public_backend" {
-  name    = "deny-public-to-backend"
+  name    = "${var.environment}-deny-public-to-backend"
   network = google_compute_network.vpc_network.name
 
   deny {
@@ -219,7 +219,7 @@ resource "google_compute_firewall" "deny_public_backend" {
 }
 
 resource "google_compute_firewall" "iap_ssh_bastion" {
-  name    = "allow-iap-ssh-bastion"
+  name    = "${var.environment}-allow-iap-ssh-bastion"
   network = google_compute_network.vpc_network.name
 
   allow {

@@ -18,6 +18,7 @@ module "network" {
   primary_range            = var.primary_range
   secondary_range_pods     = var.secondary_range_pods
   secondary_range_services = var.secondary_range_services
+  environment              = var.environment
 }
 
 module "iam" {
