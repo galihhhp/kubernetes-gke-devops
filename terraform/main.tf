@@ -31,20 +31,9 @@ module "iam" {
   # FALSE: Use during initial deployment when GKE cluster doesn't exist yet
   # TRUE:  Use after GKE cluster is deployed
   enable_workload_identity = var.enable_workload_identity
-  iap_user                 = var.iap_user
 }
 
-module "bastion" {
-  source       = "./modules/bastion"
-  name         = var.bastion_name
-  machine_type = var.bastion_machine_type
-  zone         = var.bastion_zone
-  image        = var.bastion_image
-  disk_size_gb = var.bastion_disk_size_gb
-  network      = module.network.vpc_name
-  subnetwork   = module.network.subnet_name
-  metadata     = var.bastion_metadata
-}
+
 
 module "gke" {
   source = "./modules/gke-cluster"
@@ -66,5 +55,5 @@ module "gke" {
   machine_type          = var.machine_type
   environment           = var.environment
   project_id            = var.project_id
-  bastion_internal_ip   = "${module.bastion.internal_ip}/32"
+
 }

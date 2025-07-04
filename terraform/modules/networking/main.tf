@@ -218,18 +218,4 @@ resource "google_compute_firewall" "deny_public_backend" {
   description = "Deny public access to backend"
 }
 
-resource "google_compute_firewall" "iap_ssh_bastion" {
-  name    = "${var.environment}-allow-iap-ssh-bastion"
-  network = google_compute_network.vpc_network.name
 
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
-
-  source_ranges = ["35.235.240.0/20"]
-  target_tags   = ["bastion"]
-
-  direction = "INGRESS"
-  priority  = 1000
-}

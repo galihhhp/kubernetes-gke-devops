@@ -39,7 +39,7 @@ resource "google_container_cluster" "main" {
 
   private_cluster_config {
     enable_private_nodes    = true
-    enable_private_endpoint = true
+    enable_private_endpoint = false # dont do this in prod
     master_ipv4_cidr_block  = "172.16.0.0/28"
   }
 
@@ -55,8 +55,8 @@ resource "google_container_cluster" "main" {
     }
 
     cidr_blocks {
-      cidr_block   = var.bastion_internal_ip
-      display_name = "bastion-vm"
+      cidr_block   = "0.0.0.0/0"
+      display_name = "allow-all" # dont do this in prod
     }
   }
 
