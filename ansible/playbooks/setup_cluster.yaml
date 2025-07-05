@@ -1,0 +1,12 @@
+- name: Setup initial cluster resources
+  hosts: localhost
+  connection: local
+  vars:
+    namespaces:
+      - frontend
+      - backend
+      - database
+      - monitoring
+      - ingress
+  roles:
+    - namespace

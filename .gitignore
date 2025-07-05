@@ -46,3 +46,9 @@ terraform.rc
 .idea/
 *.swp
 *.swo
+
+# Ansible
+ansible/ansible.log
+*.retry
+.ansible/
+/ansible/inventory/
