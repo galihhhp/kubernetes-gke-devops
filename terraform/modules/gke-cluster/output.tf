@@ -75,26 +75,6 @@ output "master_ipv4_cidr_block" {
   value       = google_container_cluster.main.private_cluster_config[0].master_ipv4_cidr_block
 }
 
-output "main_node_pool_id" {
-  description = "The ID of the main node pool"
-  value       = google_container_node_pool.main_node.id
-}
-
-output "main_node_pool_name" {
-  description = "The name of the main node pool"
-  value       = google_container_node_pool.main_node.name
-}
-
-output "main_node_pool_instance_group_urls" {
-  description = "List of instance group URLs which have been assigned to the main node pool"
-  value       = google_container_node_pool.main_node.instance_group_urls
-}
-
-output "main_node_pool_machine_type" {
-  description = "The machine type for the main node pool"
-  value       = google_container_node_pool.main_node.node_config[0].machine_type
-}
-
 output "kubectl_config_command" {
   description = "Command to configure kubectl"
   value       = "gcloud container clusters get-credentials ${google_container_cluster.main.name} --region=${google_container_cluster.main.location} --project=${var.project_id}"
@@ -106,15 +86,31 @@ output "cluster_resource_labels" {
 }
 
 output "node_pools" {
-  description = "List of node pools in the cluster"
+  description = "A map of node pools in the cluster."
   value = {
-    main = {
-      name         = google_container_node_pool.main_node.name
-      machine_type = google_container_node_pool.main_node.node_config[0].machine_type
-      disk_size_gb = google_container_node_pool.main_node.node_config[0].disk_size_gb
-      min_nodes    = google_container_node_pool.main_node.autoscaling[0].min_node_count
-      max_nodes    = google_container_node_pool.main_node.autoscaling[0].max_node_count
-      preemptible  = google_container_node_pool.main_node.node_config[0].preemptible
+    "app" = {
+      name         = google_container_node_pool.app_node.name
+      machine_type = google_container_node_pool.app_node.node_config[0].machine_type
+      disk_size_gb = google_container_node_pool.app_node.node_config[0].disk_size_gb
+      min_nodes    = google_container_node_pool.app_node.autoscaling[0].min_node_count
+      max_nodes    = google_container_node_pool.app_node.autoscaling[0].max_node_count
+      preemptible  = google_container_node_pool.app_node.node_config[0].preemptible
+    }
+    "database" = {
+      name         = google_container_node_pool.database_node.name
+      machine_type = google_container_node_pool.database_node.node_config[0].machine_type
+      disk_size_gb = google_container_node_pool.database_node.node_config[0].disk_size_gb
+      min_nodes    = google_container_node_pool.database_node.autoscaling[0].min_node_count
+      max_nodes    = google_container_node_pool.database_node.autoscaling[0].max_node_count
+      preemptible  = google_container_node_pool.database_node.node_config[0].preemptible
+    }
+    "general" = {
+      name         = google_container_node_pool.general_node.name
+      machine_type = google_container_node_pool.general_node.node_config[0].machine_type
+      disk_size_gb = google_container_node_pool.general_node.node_config[0].disk_size_gb
+      min_nodes    = google_container_node_pool.general_node.autoscaling[0].min_node_count
+      max_nodes    = google_container_node_pool.general_node.autoscaling[0].max_node_count
+      preemptible  = google_container_node_pool.general_node.node_config[0].preemptible
     }
   }
 }

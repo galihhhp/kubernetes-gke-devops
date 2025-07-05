@@ -1,2 +1,2 @@
-bucket = "tf-k8s-state-development"
-prefix = "terraform/dev" 
+bucket = "tf-state-development"
+prefix = "development" 

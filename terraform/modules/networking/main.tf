@@ -12,12 +12,12 @@ resource "google_compute_subnetwork" "subnet" {
   network       = google_compute_network.vpc_network.id
 
   secondary_ip_range {
-    range_name    = "pods"
+    range_name    = local.secondary_ranges.pods_name
     ip_cidr_range = var.secondary_range_pods
   }
 
   secondary_ip_range {
-    range_name    = "services"
+    range_name    = local.secondary_ranges.services_name
     ip_cidr_range = var.secondary_range_services
   }
 
@@ -62,14 +62,14 @@ resource "google_compute_firewall" "load_balancer" {
 
   allow {
     protocol = "tcp"
-    ports    = ["3000"]
+    ports    = ["443", "80", "10250", "10255", "4001", "2379", "2380"]
   }
 
   source_ranges = [
     "130.211.0.0/22",
     "35.191.0.0/16"
   ]
-  target_tags = [var.tag_frontend]
+  target_tags = [local.tags.app]
 
   direction = "INGRESS"
   priority  = 1000
@@ -77,26 +77,8 @@ resource "google_compute_firewall" "load_balancer" {
   description = "Allow traffic from load balancer to frontend"
 }
 
-resource "google_compute_firewall" "frontend_to_backend" {
-  name    = "${var.environment}-allow-frontend-to-backend"
-  network = google_compute_network.vpc_network.name
-
-  allow {
-    protocol = "tcp"
-    ports    = ["5173"]
-  }
-
-  source_tags = [var.tag_frontend]
-  target_tags = [var.tag_backend]
-
-  direction = "INGRESS"
-  priority  = 1000
-
-  description = "Allow traffic from frontend to backend"
-}
-
 resource "google_compute_firewall" "backend_to_db" {
-  name    = "${var.environment}-allow-backend-to-db"
+  name    = "${var.environment}-allow-app-to-db"
   network = google_compute_network.vpc_network.name
 
   allow {
@@ -104,13 +86,13 @@ resource "google_compute_firewall" "backend_to_db" {
     ports    = ["5432"]
   }
 
-  source_tags = [var.tag_backend]
-  target_tags = [var.tag_postgresql]
+  source_tags = [local.tags.app]
+  target_tags = [local.tags.postgresql]
 
   direction = "INGRESS"
   priority  = 1000
 
-  description = "Allow traffic from backend to PostgreSQL"
+  description = "Allow traffic from app to PostgreSQL"
 }
 
 resource "google_compute_firewall" "monitoring" {
@@ -122,8 +104,8 @@ resource "google_compute_firewall" "monitoring" {
     ports    = ["9090", "9091"]
   }
 
-  source_tags = [var.tag_monitoring]
-  target_tags = [var.tag_gke_node]
+  source_tags = [local.tags.monitoring]
+  target_tags = [local.tags.gke_node]
 
   direction = "INGRESS"
   priority  = 1000
@@ -146,7 +128,7 @@ resource "google_compute_firewall" "health_checks" {
     "130.211.0.0/22"
   ]
 
-  target_tags = [var.tag_gke_node]
+  target_tags = [local.tags.gke_node]
 
   direction = "INGRESS"
   priority  = 1000
@@ -160,6 +142,7 @@ resource "google_compute_firewall" "internal_communication" {
 
   allow {
     protocol = "tcp"
+    ports    = ["443", "10250", "10255", "4001", "2379", "2380"]
   }
 
   allow {
@@ -170,16 +153,12 @@ resource "google_compute_firewall" "internal_communication" {
     protocol = "icmp"
   }
 
-
   source_ranges = [var.primary_range]
+  target_tags   = [local.tags.gke_node]
+  direction     = "INGRESS"
+  priority      = 1000
 
-
-  target_tags = [var.tag_gke_node]
-
-  direction = "INGRESS"
-  priority  = 1000
-
-  description = "Allow internal communication"
+  description = "Allow internal communication for GKE nodes (TCP: 443, 10250, 10255, 4001, 2379, 2380; UDP; ICMP)"
 }
 
 resource "google_compute_firewall" "deny_public_db" {
@@ -192,7 +171,7 @@ resource "google_compute_firewall" "deny_public_db" {
   }
 
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = [var.tag_postgresql]
+  target_tags   = [local.tags.postgresql]
 
   direction = "INGRESS"
   priority  = 900
@@ -200,22 +179,22 @@ resource "google_compute_firewall" "deny_public_db" {
   description = "Deny public access to PostgreSQL"
 }
 
-resource "google_compute_firewall" "deny_public_backend" {
-  name    = "${var.environment}-deny-public-to-backend"
+resource "google_compute_firewall" "deny_public_app" {
+  name    = "${var.environment}-deny-public-to-app"
   network = google_compute_network.vpc_network.name
 
   deny {
     protocol = "tcp"
-    ports    = ["5173"]
+    ports    = ["5173", "3000"]
   }
 
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = [var.tag_backend]
+  target_tags   = [local.tags.app]
 
   direction = "INGRESS"
   priority  = 900
 
-  description = "Deny public access to backend"
+  description = "Deny public access to app"
 }
 
 

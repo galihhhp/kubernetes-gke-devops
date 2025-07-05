@@ -200,26 +200,6 @@ output "master_ipv4_cidr_block" {
   value       = module.gke.master_ipv4_cidr_block
 }
 
-output "main_node_pool_id" {
-  description = "The ID of the main node pool"
-  value       = module.gke.main_node_pool_id
-}
-
-output "main_node_pool_name" {
-  description = "The name of the main node pool"
-  value       = module.gke.main_node_pool_name
-}
-
-output "main_node_pool_instance_group_urls" {
-  description = "List of instance group URLs which have been assigned to the main node pool"
-  value       = module.gke.main_node_pool_instance_group_urls
-}
-
-output "main_node_pool_machine_type" {
-  description = "The machine type for the main node pool"
-  value       = module.gke.main_node_pool_machine_type
-}
-
 output "kubectl_config_command" {
   description = "Command to configure kubectl"
   value       = module.gke.kubectl_config_command

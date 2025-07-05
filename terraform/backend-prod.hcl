@@ -1,2 +1,2 @@
-bucket = "tf-k8s-state-production"
-prefix = "terraform/prod" 
+bucket = "tf-state-production"
+prefix = "production" 

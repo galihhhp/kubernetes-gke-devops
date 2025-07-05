@@ -40,22 +40,22 @@ output "subnet_cidr" {
 
 output "pods_cidr" {
   description = "The secondary CIDR for pods"
-  value       = google_compute_subnetwork.subnet.secondary_ip_range[0].ip_cidr_range
+  value       = var.secondary_range_pods
 }
 
 output "pods_range_name" {
   description = "The name of the secondary range for pods"
-  value       = google_compute_subnetwork.subnet.secondary_ip_range[0].range_name
+  value       = local.secondary_ranges.pods_name
 }
 
 output "services_cidr" {
   description = "The secondary CIDR for services"
-  value       = google_compute_subnetwork.subnet.secondary_ip_range[1].ip_cidr_range
+  value       = var.secondary_range_services
 }
 
 output "services_range_name" {
   description = "The name of the secondary range for services"
-  value       = google_compute_subnetwork.subnet.secondary_ip_range[1].range_name
+  value       = local.secondary_ranges.services_name
 }
 
 output "firewall_tags" {

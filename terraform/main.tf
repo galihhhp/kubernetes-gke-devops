@@ -27,13 +27,8 @@ module "iam" {
   project_id                 = var.project_id
   environment                = var.environment
   workload_identity_bindings = var.workload_identity_bindings
-  # Workload Identity Configuration
-  # FALSE: Use during initial deployment when GKE cluster doesn't exist yet
-  # TRUE:  Use after GKE cluster is deployed
-  enable_workload_identity = var.enable_workload_identity
+  enable_workload_identity   = var.enable_workload_identity
 }
-
-
 
 module "gke" {
   source = "./modules/gke-cluster"
@@ -41,8 +36,6 @@ module "gke" {
   network_name          = module.network.vpc_name
   subnet_name           = module.network.subnet_name
   service_account_email = module.iam.gke_node_service_account_email
-  pods_range_name       = module.network.pods_range_name
-  services_range_name   = module.network.services_range_name
   deletion_protection   = var.deletion_protection
   disk_size_gb          = var.disk_size_gb
   region                = var.region
@@ -55,5 +48,4 @@ module "gke" {
   machine_type          = var.machine_type
   environment           = var.environment
   project_id            = var.project_id
-
 }

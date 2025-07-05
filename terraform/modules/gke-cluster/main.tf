@@ -24,17 +24,7 @@ resource "google_container_cluster" "main" {
   }
 
   cluster_autoscaling {
-    enabled = true
-    resource_limits {
-      resource_type = "cpu"
-      minimum       = 6
-      maximum       = 20
-    }
-    resource_limits {
-      resource_type = "memory"
-      minimum       = 12
-      maximum       = 30
-    }
+    enabled = false
   }
 
   private_cluster_config {
@@ -44,8 +34,8 @@ resource "google_container_cluster" "main" {
   }
 
   ip_allocation_policy {
-    cluster_secondary_range_name  = var.pods_range_name
-    services_secondary_range_name = var.services_range_name
+    cluster_secondary_range_name  = local.secondary_ranges.pods_name
+    services_secondary_range_name = local.secondary_ranges.services_name
   }
 
   master_authorized_networks_config {
@@ -77,10 +67,11 @@ resource "google_container_cluster" "main" {
   }
 }
 
-resource "google_container_node_pool" "main_node" {
-  name     = var.node_pool_name
-  location = "${var.region}-a"
-  cluster  = google_container_cluster.main.name
+resource "google_container_node_pool" "app_node" {
+  name               = "app-${var.node_pool_name}"
+  location           = "${var.region}-a"
+  cluster            = google_container_cluster.main.name
+  initial_node_count = 1
 
   autoscaling {
     min_node_count = var.min_node_count
@@ -91,10 +82,13 @@ resource "google_container_node_pool" "main_node" {
     preemptible     = var.preemptible
     machine_type    = var.machine_type
     disk_size_gb    = var.disk_size_gb
-    tags            = [var.tag_gke_node, var.tag_frontend, var.tag_backend, var.tag_monitoring, var.tag_postgresql]
+    tags            = [local.tags.gke_node, local.tags.app]
     service_account = var.service_account_email
     oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring"
     ]
 
     workload_metadata_config {
@@ -102,9 +96,88 @@ resource "google_container_node_pool" "main_node" {
     }
 
     labels = {
-      "node-type" = "standard"
-      "workload"  = "application"
+      "workload" = "app"
+    }
+
+    taint {
+      key    = "workload"
+      value  = "app"
+      effect = "NO_SCHEDULE"
     }
   }
 }
 
+resource "google_container_node_pool" "database_node" {
+  name               = "database-${var.node_pool_name}"
+  location           = "${var.region}-a"
+  cluster            = google_container_cluster.main.name
+  initial_node_count = 1
+
+  autoscaling {
+    min_node_count = 1
+    max_node_count = 3
+  }
+
+  node_config {
+    preemptible     = var.preemptible
+    machine_type    = var.machine_type
+    disk_size_gb    = var.disk_size_gb
+    disk_type       = "pd-ssd"
+    tags            = [local.tags.gke_node, local.tags.postgresql]
+    service_account = var.service_account_email
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring"
+    ]
+
+    workload_metadata_config {
+      mode = "GKE_METADATA"
+    }
+
+    labels = {
+      "workload" = "database"
+    }
+
+    taint {
+      key    = "workload"
+      value  = "database"
+      effect = "PREFER_NO_SCHEDULE"
+    }
+  }
+}
+
+resource "google_container_node_pool" "general_node" {
+  name               = "general-${var.node_pool_name}"
+  location           = "${var.region}-a"
+  cluster            = google_container_cluster.main.name
+  initial_node_count = 1
+
+  autoscaling {
+    min_node_count = 1
+    max_node_count = 3
+  }
+
+  node_config {
+    preemptible     = var.preemptible
+    machine_type    = var.machine_type
+    disk_size_gb    = var.disk_size_gb
+    tags            = [local.tags.gke_node]
+    service_account = var.service_account_email
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring"
+    ]
+
+    workload_metadata_config {
+      mode = "GKE_METADATA"
+    }
+
+    labels = {
+      "workload" = "general"
+    }
+  }
+}

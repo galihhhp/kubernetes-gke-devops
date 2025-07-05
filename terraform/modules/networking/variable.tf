@@ -33,36 +33,6 @@ variable "secondary_range_services" {
   type        = string
 }
 
-variable "tag_gke_node" {
-  description = "Tag for GKE nodes"
-  type        = string
-  default     = "gke-node"
-}
-
-variable "tag_frontend" {
-  description = "Tag for frontend workloads"
-  type        = string
-  default     = "frontend"
-}
-
-variable "tag_backend" {
-  description = "Tag for backend workloads"
-  type        = string
-  default     = "backend"
-}
-
-variable "tag_postgresql" {
-  description = "Tag for PostgreSQL database workloads"
-  type        = string
-  default     = "postgresql"
-}
-
-variable "tag_monitoring" {
-  description = "Tag for monitoring workloads"
-  type        = string
-  default     = "monitoring"
-}
-
 variable "environment" {
   description = "The environment name (e.g., dev, prod)"
   type        = string
