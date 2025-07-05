@@ -41,22 +41,21 @@ This document explains every field in main.tf, in the exact order they appear, i
 
 Each firewall rule is crafted for least-privilege, only allowing the exact traffic needed. Why: Security, audit, and control. Effect: Only the right traffic flows. Trade-off: If you miss a rule, things break. Analogy: Giving each building a list of who can enter and when.
 
-- load_balancer: Allows LB to frontend on port 3000. Analogy: VIP lane for delivery trucks.
-- frontend_to_backend: Allows frontend to backend on 5173. Analogy: Private corridor from shop to storeroom.
-- backend_to_db: Allows backend to PostgreSQL on 5432. Analogy: Dumbwaiter from kitchen to vault.
-- monitoring: Allows monitoring to nodes on 9090/9091. Analogy: Inspectors into utility rooms.
-- health_checks: Allows GCP health checks to nodes. Analogy: City inspectors check building safety.
-- internal_communication: Allows all TCP/UDP/ICMP within subnet. Analogy: Residents talk inside city.
-- deny_public_db: Blocks public access to PostgreSQL. Analogy: Vault behind a locked door.
-- deny_public_backend: Blocks public access to backend. Analogy: Storeroom invisible to public.
-- iap_ssh_bastion: Only allows IAP to SSH into bastion. Analogy: Secret tunnel for trusted guards.
+- `load_balancer`: Allows LB to the `app` node pool on ports 80/443. Analogy: VIP lane for delivery trucks.
+- `app_to_db`: Allows the `app` node pool to access PostgreSQL on 5432. Analogy: A secure corridor from the main kitchen to the database vault.
+- `monitoring`: Allows monitoring to nodes on 9090/9091. Analogy: Inspectors into utility rooms.
+- `health_checks`: Allows GCP health checks to nodes. Analogy: City inspectors check building safety.
+- `internal_communication`: Allows all TCP/UDP/ICMP within subnet. Analogy: Residents talk inside city.
+- `deny_public_db`: Blocks public access to PostgreSQL. Analogy: Vault behind a locked door.
+- `deny_public_app`: Blocks public access to the application ports. Analogy: Making the main kitchen invisible to the public.
+- `iap_ssh_bastion`: Only allows IAP to SSH into bastion. Analogy: Secret tunnel for trusted guards.
 
 ---
 
 ## Summary Table
 
 | Resource/Field | Why                       | Effect                      | Trade-off                 | Analogy                             |
-| -------------- | ------------------------- | --------------------------- | ------------------------- | ----------------------------------- |
+| :------------- | :------------------------ | :-------------------------- | :------------------------ | :---------------------------------- |
 | vpc_network    | Naming, control           | Clear, auditable            | None                      | Naming your city                    |
 | subnetwork     | Consistency, K8s, audit   | Predictable, secure         | More planning             | Naming a neighborhood               |
 | router         | Dynamic routing           | Flexible, hybrid networking | More moving parts         | City traffic control center         |

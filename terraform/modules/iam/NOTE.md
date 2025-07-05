@@ -88,7 +88,7 @@ This document explains every field in main.tf, in the exact order they appear, i
 ## Summary Table
 
 | Resource/Field                        | Why                                                             | Effect                                     | Trade-off                                       | Analogy                                |
-| ------------------------------------- | --------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------- | -------------------------------------- |
+| :------------------------------------ | :-------------------------------------------------------------- | :----------------------------------------- | :---------------------------------------------- | :------------------------------------- |
 | locals.service_account_roles          | Makes it easier to assign roles programmatically.               | Simplifies mapping, reduces manual errors. | Slightly more complex logic.                    | Master checklist for badges            |
 | google_service_account.workload...    | Each component gets its own identity for least privilege.       | Granular access, easy to audit and revoke. | More service accounts to manage.                | Badge printer per department           |
 | google_project_iam_member.workload... | Ensures each account only gets the access it needs.             | Least privilege, granular control.         | Mapping errors can cause over/under-permission. | Badge programmed for right doors       |
