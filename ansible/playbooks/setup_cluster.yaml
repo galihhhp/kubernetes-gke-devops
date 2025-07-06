@@ -1,12 +1,18 @@
-- name: Setup initial cluster resources
-  hosts: localhost
+- name: Set up initial cluster resources
+  hosts: "{{ target_env }}"
   connection: local
+  vars_files:
+    - ../group_vars/all.yaml
+    - "../group_vars/{{ target_env }}.yaml"
   vars:
+    target_env: "dev"
     namespaces:
       - frontend
       - backend
       - database
       - monitoring
-      - ingress
+      - ingress-nginx
   roles:
-    - namespace
+    - role: namespace
+    - role: cert-manager-issuer
+    - role: ingress-nginx

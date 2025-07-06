@@ -1,0 +1,11 @@
+- name: Apply the Let's Encrypt production ClusterIssuer
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'prod-issuer.yml.j2') }}"
+  when: target_env == "prod"
+
+- name: Apply the Let's Encrypt dev ClusterIssuer
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'dev-issuer.yml.j2') }}"
+  when: target_env == "dev"
