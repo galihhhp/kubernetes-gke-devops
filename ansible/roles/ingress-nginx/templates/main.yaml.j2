@@ -1,19 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-{{ target_env }}
+  name: app-ingress-{{ ansible_limit }}
   namespace: frontend
   labels:
-    app: app-{{ target_env }}
+    app: app-{{ ansible_limit }}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "{{ cluster_issuer }}"
+    cert-manager.io/cluster-issuer: "letsencrypt-{{ ansible_limit }}"
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
     - {{ domain }}
-    secretName: tls-secret
+    secretName: tls-secret-{{ ansible_limit }}
   rules:
   - host: {{ domain }}
     http:
@@ -22,13 +22,13 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: service-{{ target_env }}
+            name: frontend-service-{{ ansible_limit }}
             port:
               number: 80
       - path: /api
         pathType: Prefix
         backend:
           service:
-            name: api-service-{{ target_env }}
+            name: backend-service-{{ ansible_limit }}
             port:
               number: 3000

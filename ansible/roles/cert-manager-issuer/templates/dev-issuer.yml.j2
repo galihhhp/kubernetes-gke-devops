@@ -1,7 +1,7 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-dev
+  name: letsencrypt-{{ ansible_limit }}
 spec:
   acme:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
@@ -11,4 +11,11 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: nginx 
+          class: nginx
+          podTemplate:
+            metadata:
+              labels:
+                app: cert-manager
+            spec:
+              nodeSelector:
+                kubernetes.io/os: linux 

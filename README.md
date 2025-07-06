@@ -37,63 +37,6 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 - **Basic understanding** of YAML and containerization
 - **Recommended Setup:** Ubuntu 22.04 LTS or macOS for development environment
 
-## Directory Structure
-
-```
-kubernetes-gke-devops/
-├── README.md
-├── .gitignore
-├── terraform/
-│   ├── environments/
-│   │   ├── dev/
-│   │   ├── staging/
-│   │   └── prod/
-│   └── modules/
-│       ├── gke-cluster/
-│       ├── networking/
-│       └── storage/
-├── k8s/
-│   ├── base/
-│   │   ├── deployments/
-│   │   ├── services/
-│   │   ├── configmaps/
-│   │   └── secrets/
-│   ├── overlays/
-│   │   ├── dev/
-│   │   ├── staging/
-│   │   └── prod/
-│   └── manifests/
-│       ├── fastify-app/
-│       ├── postgresql/
-│       └── monitoring/
-
-├── ansible/
-│   ├── playbooks/
-│   │   ├── setup-environment.yml
-│   │   ├── deploy-application.yml
-│   │   ├── backup-restore.yml
-│   │   └── disaster-recovery.yml
-│   ├── roles/
-│   │   ├── gcp-tools/
-│   │   ├── k8s-tools/
-│   │   ├── monitoring/
-│   │   └── security/
-│   ├── inventory/
-│   │   ├── dev/
-│   │   ├── staging/
-│   │   └── prod/
-│   └── group_vars/
-├── monitoring/
-│   ├── prometheus/
-│   ├── grafana/
-│   └── alertmanager/
-├── gitops/
-│   ├── workflows/
-│   └── deployment-configs/
-└── .github/
-    └── workflows/
-```
-
 ## Challenges
 
 ### 🟢 Challenge 1: K8s Foundations & GKE Cluster Setup
@@ -109,10 +52,10 @@ kubernetes-gke-devops/
   - Node pools with different machine types
   - Network policies and firewall rules
   - IAM roles and service accounts
-- **kubectl** configuration and cluster access setup
-- **Basic pod, deployment, and service** creation
-- **Namespace** organization and resource quotas
-- **Ingress controller** setup (nginx-ingress or GKE Ingress)
+- **kubectl** configuration and cluster access setup (via Ansible)
+- **Ansible roles** for creating basic pods, deployments, and services
+- **Namespace** organization and resource quotas (managed by Ansible)
+- **Deploying an Ingress controller** (nginx-ingress) using a dedicated Ansible role
 
 **Skills Learned:**
 
@@ -137,12 +80,12 @@ kubernetes-gke-devops/
 
 **Level: BEGINNER** | **Prerequisites: Challenge 1**
 
-**Objective:** Deploy a multi-tier Fastify application with proper service discovery and load balancing.
+**Objective:** Deploy a multi-tier application (ReactJS frontend, ElysiaJS backend) with proper service discovery and load balancing using Ansible roles.
 
 **What You'll Build:**
 
-- **Containerized Fastify application** with health checks
-- **Multi-tier deployment** (frontend, backend, database)
+- **Containerized application stack (ElysiaJS backend, ReactJS frontend)** with health checks
+- **Ansible roles** for a multi-tier deployment (frontend, backend, database)
 - **Service discovery** between components
 - **Load balancing** with different service types
 - **Horizontal Pod Autoscaler (HPA)** configuration
@@ -160,7 +103,7 @@ kubernetes-gke-devops/
 
 **Deliverables:**
 
-- Complete application manifests
+- Ansible roles and templates for the complete application
 - Service discovery configuration
 - Auto-scaling policies
 - Health check implementation
@@ -172,14 +115,14 @@ kubernetes-gke-devops/
 
 **Level: INTERMEDIATE** | **Prerequisites: Challenge 2**
 
-**Objective:** Implement secure and flexible configuration management using ConfigMaps, Secrets, and external secret management.
+**Objective:** Implement secure and flexible configuration management using ConfigMaps, Secrets, and Ansible for environment separation.
 
 **What You'll Build:**
 
-- **ConfigMaps** for application configuration
-- **Kubernetes Secrets** for sensitive data
-- **Google Secret Manager** integration
-- **Kustomize** for environment-specific configurations
+- **ConfigMaps** for application configuration managed via Ansible templates
+- **Kubernetes Secrets** for sensitive data, populated by Ansible Vault
+- **Google Secret Manager** integration using Ansible roles
+- **Ansible variables (`group_vars`, `host_vars`)** for environment-specific configurations
 - **Init containers** for configuration setup
 - **Volume mounts** for configuration files
 - **Environment variable** injection patterns
@@ -188,15 +131,15 @@ kubernetes-gke-devops/
 **Skills Learned:**
 
 - **Secret management** best practices in K8s
-- **Kustomize** for configuration templating (without Helm)
+- **Environment separation** using Ansible variables and templates
 - **GCP Secret Manager** integration
 - **Configuration injection** methods
 - **Security hardening** for sensitive data
-- **Environment separation** strategies
+- **Ansible Vault** for encrypting secrets at rest
 
 **Deliverables:**
 
-- Kustomize overlays for different environments
+- Ansible variable files (`group_vars`) for different environments
 - Secret management integration via Ansible
 - Ansible playbooks for configuration validation
 - Security audit documentation
@@ -213,10 +156,10 @@ kubernetes-gke-devops/
 **What You'll Build:**
 
 - **Persistent Volumes (PV)** and **Persistent Volume Claims (PVC)**
-- **StatefulSets** for PostgreSQL database deployment
+- **StatefulSets** for PostgreSQL database deployment, managed by an Ansible role
 - **PostgreSQL container** deployment with persistent storage
-- **Cloud Storage** integration for database backups
-- **Backup and restore** procedures for PostgreSQL data
+- **Cloud Storage** integration for database backups, automated with Ansible
+- **Backup and restore** procedures for PostgreSQL data, run via playbooks
 - **Storage classes** configuration for different performance needs
 - **Volume snapshots** for data protection
 
@@ -389,19 +332,19 @@ kubernetes-gke-devops/
 
 **What You'll Build:**
 
-- **GitHub Actions workflows** for automated testing and deployment
-- **Multi-stage deployment** pipelines (build → test → deploy)
-- **Environment-specific** deployment strategies
-- **Rollback mechanisms** using GitHub Actions
+- **GitHub Actions workflows** that trigger Ansible playbooks
+- **Multi-stage deployment** pipelines (build → test → deploy) orchestrated by Ansible
+- **Environment-specific** deployment strategies using Ansible's inventory
+- **Rollback mechanisms** using Ansible
 - **Security scanning** integration in CI/CD
-- **Automated testing** for K8s manifests (kubeval, conftest)
+- **Automated testing** for rendered K8s manifests using Ansible and tools like `kubeval`
 - **Deployment approval** workflows for production
-- **Notification systems** for deployment status
+- **Notification systems** for deployment status, triggered from Ansible
 
 **Skills Learned:**
 
 - **Advanced GitHub Actions** workflows
-- **CI/CD pipeline** optimization for Kubernetes
+- **CI/CD pipeline** optimization for Kubernetes with Ansible
 - **Automated testing** strategies for K8s
 - **Security integration** in deployment pipelines
 - **Environment promotion** workflows
@@ -530,7 +473,7 @@ git                        # Version control
 
 # Container & Development
 docker                     # Container runtime
-node.js & npm             # For Fastify application
+node.js & npm             # For ElysiaJS backend and ReactJS frontend
 code/vim                   # Code editor
 ```
 
@@ -695,96 +638,6 @@ kubectl get nodes
 kubectl cluster-info
 ```
 
-### **Post-Deployment Verification**
-
-```bash
-# Check cluster status
-gcloud container clusters describe CLUSTER-NAME --zone=ZONE
-
-# Verify kubectl context
-kubectl config current-context
-kubectl get namespaces
-
-# Test basic functionality
-kubectl run test-pod --image=nginx --rm -it -- /bin/bash
-
-# Verify workload identity is working
-kubectl describe serviceaccount default
-```
-
-### **Environment Progression Workflow**
-
-```bash
-# 1. Start with dev environment
-cd terraform/environments/dev/
-terraform init && terraform plan && terraform apply
-
-# 2. Test and validate in dev
-# Run your application deployments and tests
-
-# 3. Promote to staging
-cd ../staging/
-terraform init && terraform plan && terraform apply
-
-# 4. Final validation in staging
-# Run full integration tests
-
-# 5. Deploy to production (with extra caution)
-cd ../prod/
-terraform init && terraform plan -out=prod.tfplan
-# Review plan thoroughly
-terraform apply prod.tfplan
-```
-
-### **Terraform State Management**
-
-```bash
-# For team collaboration, use remote state
-# Configure in terraform/environments/{env}/backend.tf:
-
-terraform {
-  backend "gcs" {
-    bucket = "your-terraform-state-bucket"
-    prefix = "terraform/state/dev"  # Change per environment
-  }
-}
-
-# Create state bucket (one-time setup)
-gsutil mb gs://your-terraform-state-bucket
-gsutil versioning set on gs://your-terraform-state-bucket
-```
-
-### **Troubleshooting Common Issues**
-
-```bash
-# If terraform init fails
-terraform init -upgrade
-
-# If state is locked
-terraform force-unlock LOCK-ID
-
-# If quota exceeded
-gcloud compute quotas list --filter="service:compute.googleapis.com"
-
-# Check logs for cluster creation issues
-gcloud logging read "resource.type=gke_cluster" --limit=50
-
-# If workload identity fails to enable
-gcloud container clusters update CLUSTER-NAME --workload-pool=PROJECT-ID.svc.id.goog
-```
-
-### **Cleanup Workflow**
-
-```bash
-# Destroy resources (reverse order: prod → staging → dev)
-terraform plan -destroy
-terraform destroy  # Add -auto-approve for non-prod environments
-
-# Verify cleanup
-gcloud container clusters list
-gcloud compute instances list
-```
-
 ### **Best Practices for Terraform Application**
 
 - **Always run `terraform plan`** before `apply`
@@ -818,3 +671,7 @@ This project demonstrates:
 - **Security-first** approach
 - **Cost optimization** awareness
 - **Production-ready** implementations
+
+```
+
+```

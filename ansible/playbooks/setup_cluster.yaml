@@ -1,11 +1,7 @@
 - name: Set up initial cluster resources
-  hosts: "{{ target_env }}"
+  hosts: all
   connection: local
-  vars_files:
-    - ../group_vars/all.yaml
-    - "../group_vars/{{ target_env }}.yaml"
   vars:
-    target_env: "dev"
     namespaces:
       - frontend
       - backend

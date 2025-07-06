@@ -51,4 +51,3 @@ terraform.rc
 ansible/ansible.log
 *.retry
 .ansible/
-/ansible/inventory/
