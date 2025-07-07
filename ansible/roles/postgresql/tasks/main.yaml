@@ -1,0 +1,4 @@
+- name: Apply PostgreSQL Manifest (Stateful, ConfigMap, Secret, and Service)
+  kubernetes.core.k8s:
+    state: "{{ k8s_state | default('present') }}"
+    definition: "{{ lookup('template', 'main.yaml.j2') }}"

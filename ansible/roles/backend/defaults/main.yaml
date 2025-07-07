@@ -1,0 +1,10 @@
+backend_label: tasks-backend
+backend_db_name: "{{ app_db_name }}"
+backend_db_port: "{{ app_db_port }}"
+backend_db_host: "{{ app_db_host }}"
+backend_db_username: "{{ db_username }}"
+backend_db_password: "{{ db_password }}"
+backend_app_node: "{{ app_node }}"
+backend_namespace: backend
+backend_image: galihhhp/elysia-backend:1.2
+backend_environment: "{{ env_suffix }}"

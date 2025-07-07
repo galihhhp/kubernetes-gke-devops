@@ -1,0 +1,8 @@
+postgresql_db_name: "{{ app_db_name }}"
+postgresql_db_username: "{{ db_username }}"
+postgresql_db_password: "{{ db_password }}"
+postgresql_label: "postgresql"
+postgresql_namespace: database
+postgresql_image: postgres:17.5-alpine
+postgresql_database_node: "{{ database_node }}"
+postgresql_environment: "{{ env_suffix }}"

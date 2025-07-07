@@ -2,7 +2,7 @@
   hosts: all
   connection: local
   vars:
-    namespaces:
+    base_namespaces:
       - frontend
       - backend
       - database

@@ -1,0 +1,6 @@
+env_suffix: dev
+domain: dev.kubernetes.p6u.site
+cluster_issuer: letsencrypt-dev
+app_db_name: dev_db
+app_db_port: 5432
+app_db_host: postgresql.database.svc.cluster.local

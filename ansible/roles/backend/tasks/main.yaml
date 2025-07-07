@@ -1,0 +1,4 @@
+- name: Apply Backend Manifest (Deployment, ConfigMap, Service, and Secret)
+  kubernetes.core.k8s:
+    state: "{{ k8s_state | default('present') }}"
+    definition: "{{ lookup('template', 'main.yaml.j2') }}"

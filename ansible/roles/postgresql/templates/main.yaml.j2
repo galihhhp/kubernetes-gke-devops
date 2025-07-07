@@ -1,0 +1,133 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ postgresql_label }}-config"
+  namespace: "{{ postgresql_namespace }}-{{ postgresql_environment }}"
+  labels:
+    app: "{{ postgresql_label }}"
+data:
+  POSTGRES_DB: "{{ postgresql_db_name }}"
+
+--- 
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ postgresql_label }}-secret"
+  namespace: "{{ postgresql_namespace }}-{{ postgresql_environment }}"
+  labels:
+    app: "{{ postgresql_label }}"
+type: Opaque
+stringData:
+  POSTGRES_USER: "{{ postgresql_db_username }}"
+  POSTGRES_PASSWORD: "{{ postgresql_db_password }}"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ postgresql_label }}-svc"
+  namespace: "{{ postgresql_namespace }}-{{ postgresql_environment }}"
+  labels:
+    app: "{{ postgresql_label }}"
+  annotations:
+    description: "PostgreSQL Service"
+spec:
+  selector:
+    app: "{{ postgresql_label }}"
+  clusterIP: None
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgresql
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "{{ postgresql_label }}-sts"
+  namespace: "{{ postgresql_namespace }}-{{ postgresql_environment }}"
+  labels:
+    app: "{{ postgresql_label }}"
+spec:
+  serviceName: "{{ postgresql_label }}-svc"
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: "{{ postgresql_label }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ postgresql_label }}" 
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: "{{ postgresql_database_node }}"
+      securityContext:
+        fsGroup: 999
+      initContainers:
+      - name: volume-permission-fix
+        image: busybox
+        command: ["sh", "-c", "chown -R 999:999 /var/lib/postgresql/data"]
+        volumeMounts:
+        - name: "{{ postgresql_label }}-data"
+          mountPath: /var/lib/postgresql/data
+      containers:
+      - name: postgresql
+        image: "{{ postgresql_image }}"
+        securityContext:
+          runAsUser: 999
+        ports:
+        - containerPort: 5432
+          name: postgresql
+        livenessProbe:
+          exec:
+            command: ["pg_isready", "-U", "{{ postgresql_db_username }}", "-d", "{{ postgresql_db_name }}"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command: ["pg_isready", "-U", "{{ postgresql_db_username }}", "-d", "{{ postgresql_db_name }}"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: "{{ postgresql_label }}-secret"
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ postgresql_label }}-secret"
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ postgresql_label }}-config"
+              key: POSTGRES_DB
+        volumeMounts:
+        - name: "{{ postgresql_label }}-data"
+          mountPath: /var/lib/postgresql/data
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+  volumeClaimTemplates:
+  - metadata:
+      name: "{{ postgresql_label }}-data" 
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "standard-rwo"
+      resources:
+        requests:
+          storage: 1Gi

@@ -1,0 +1,7 @@
+- name: App Deployment
+  hosts: all
+  connection: local
+  roles:
+    - role: postgresql
+    - role: backend
+    - role: frontend

@@ -1,0 +1,9 @@
+- name: Cleanup Application from Cluster
+  hosts: localhost
+  gather_facts: false
+  vars:
+    k8s_state: absent
+  roles:
+    - role: frontend
+    - role: backend
+    - role: postgresql
