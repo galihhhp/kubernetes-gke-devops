@@ -1,0 +1,4 @@
+backend_label: tasks-backend
+frontend_label: tasks-frontend
+frontend_namespace: frontend
+backend_namespace: backend

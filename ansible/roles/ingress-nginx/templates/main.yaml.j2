@@ -2,18 +2,22 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: app-ingress-{{ ansible_limit }}
-  namespace: frontend
+  namespace: {{ frontend_namespace }}-{{ env_suffix }}
   labels:
     app: app-{{ ansible_limit }}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+{% if ssl_enabled | default(false) %}
     cert-manager.io/cluster-issuer: "letsencrypt-{{ ansible_limit }}"
+{% endif %}
 spec:
   ingressClassName: nginx
+{% if ssl_enabled | default(false) %}
   tls:
   - hosts:
     - {{ domain }}
     secretName: tls-secret-{{ ansible_limit }}
+{% endif %}
   rules:
   - host: {{ domain }}
     http:
@@ -22,13 +26,31 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: frontend-service-{{ ansible_limit }}
+            name: {{ frontend_label }}-svc
             port:
               number: 80
       - path: /api
         pathType: Prefix
         backend:
           service:
-            name: backend-service-{{ ansible_limit }}
+            name: {{ backend_label }}-proxy-svc
             port:
-              number: 3000
+              number: 80
+
+---
+# Ingress cant directly reference services in different namespaces.
+# So we need to create a proxy service that points to the backend service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ backend_label }}-proxy-svc
+  namespace: {{ frontend_namespace }}-{{ env_suffix }}
+  labels:
+    app: {{ backend_label }}-proxy
+spec:
+  type: ExternalName
+  externalName: {{ backend_label }}-svc.{{ backend_namespace }}-{{ env_suffix }}.svc.cluster.local
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP

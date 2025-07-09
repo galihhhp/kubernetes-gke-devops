@@ -142,23 +142,24 @@ resource "google_compute_firewall" "internal_communication" {
 
   allow {
     protocol = "tcp"
-    ports    = ["443", "10250", "10255", "4001", "2379", "2380"]
+    ports    = ["0-65535"]
   }
 
   allow {
     protocol = "udp"
+    ports    = ["0-65535"]
   }
 
   allow {
     protocol = "icmp"
   }
 
-  source_ranges = [var.primary_range]
-  target_tags   = [local.tags.gke_node]
-  direction     = "INGRESS"
-  priority      = 1000
+  source_tags = [local.tags.gke_node]
+  target_tags = [local.tags.gke_node]
+  direction   = "INGRESS"
+  priority    = 850
 
-  description = "Allow internal communication for GKE nodes (TCP: 443, 10250, 10255, 4001, 2379, 2380; UDP; ICMP)"
+  description = "Allow all internal communication between GKE nodes"
 }
 
 resource "google_compute_firewall" "deny_public_db" {
@@ -179,22 +180,22 @@ resource "google_compute_firewall" "deny_public_db" {
   description = "Deny public access to PostgreSQL"
 }
 
-resource "google_compute_firewall" "deny_public_app" {
-  name    = "${var.environment}-deny-public-to-app"
-  network = google_compute_network.vpc_network.name
+# resource "google_compute_firewall" "deny_public_app" {
+#   name    = "${var.environment}-deny-public-to-app"
+#   network = google_compute_network.vpc_network.name
 
-  deny {
-    protocol = "tcp"
-    ports    = ["5173", "3000"]
-  }
+#   deny {
+#     protocol = "tcp"
+#     ports    = ["5173", "3000"]
+#   }
 
-  source_ranges = ["0.0.0.0/0"]
-  target_tags   = [local.tags.app]
+#   source_ranges = ["0.0.0.0/0"]
+#   target_tags   = [local.tags.app]
 
-  direction = "INGRESS"
-  priority  = 900
+#   direction = "INGRESS"
+#   priority  = 900
 
-  description = "Deny public access to app"
-}
+#   description = "Deny public access to app"
+# }
 
 

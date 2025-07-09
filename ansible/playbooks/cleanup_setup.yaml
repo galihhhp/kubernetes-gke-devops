@@ -1,0 +1,15 @@
+- name: Cleanup Cluster Setup Resources
+  hosts: localhost
+  gather_facts: false
+  vars:
+    k8s_state: absent
+    base_namespaces:
+      - frontend
+      - backend
+      - database
+      - monitoring
+      - ingress-nginx
+  roles:
+    - role: ingress-nginx
+    - role: cert-manager-issuer
+    - role: namespace

@@ -1,6 +1,6 @@
 - name: "Create environment-specific namespaces"
   kubernetes.core.k8s:
-    state: present
+    state: "{{ k8s_state | default('present') }}"
     definition:
       apiVersion: v1
       kind: Namespace

@@ -6,7 +6,7 @@ metadata:
   labels:
     app: "{{ frontend_label }}"
 data:
-  VITE_API_URL: "{{ frontend_api_url }}"
+  API_URL: "{{ frontend_api_url }}"
 
 --- 
 
@@ -24,7 +24,7 @@ spec:
     app: "{{ frontend_label }}"
   ports:
   - port: 80
-    targetPort: 5173
+    targetPort: 80
     protocol: TCP
     name: http
   type: ClusterIP
@@ -67,14 +67,14 @@ spec:
         image: "{{ frontend_image }}"
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 5173
+        - containerPort: 80
           name: http
         env:
-        - name: VITE_API_URL
+        - name: API_URL
           valueFrom:
             configMapKeyRef:
               name: "{{ frontend_label }}-config"
-              key: VITE_API_URL
+              key: API_URL
         resources:
           limits:
             cpu: "1"

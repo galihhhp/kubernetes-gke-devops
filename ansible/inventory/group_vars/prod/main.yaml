@@ -4,3 +4,5 @@ cluster_issuer: letsencrypt-prod
 app_db_name: prod_db
 app_db_port: 5432
 app_db_host: postgresql.database.svc.cluster.local
+api_url: https://kubernetes.p6u.site/api
+ssl_enabled: true

@@ -1,11 +1,11 @@
 - name: Apply Dev ClusterIssuer
   kubernetes.core.k8s:
-    state: present
+    state: "{{ k8s_state | default('present') }}"
     definition: "{{ lookup('template', 'dev-issuer.yaml.j2') }}"
   when: ansible_limit == "dev"
 
 - name: Apply Production ClusterIssuer
   kubernetes.core.k8s:
-    state: present
+    state: "{{ k8s_state | default('present') }}"
     definition: "{{ lookup('template', 'prod-issuer.yaml.j2') }}"
   when: ansible_limit == "prod"
