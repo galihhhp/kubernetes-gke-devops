@@ -78,6 +78,10 @@ spec:
         operator: "Equal"
         value: "app"
         effect: "NoSchedule"
+      - key: "workload"
+        operator: "Equal"
+        value: "database"
+        effect: "NoSchedule"
       containers:
       - name: "{{ backend_label }}" 
         image: "{{ backend_image }}"

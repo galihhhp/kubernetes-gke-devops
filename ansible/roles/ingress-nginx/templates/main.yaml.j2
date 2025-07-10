@@ -1,12 +1,11 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-ingress-{{ ansible_limit }}
+  name: app-frontend-ingress-{{ ansible_limit }}
   namespace: {{ frontend_namespace }}-{{ env_suffix }}
   labels:
     app: app-{{ ansible_limit }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 {% if ssl_enabled | default(false) %}
     cert-manager.io/cluster-issuer: "letsencrypt-{{ ansible_limit }}"
 {% endif %}
@@ -16,7 +15,7 @@ spec:
   tls:
   - hosts:
     - {{ domain }}
-    secretName: tls-secret-{{ ansible_limit }}
+    secretName: tls-secret-frontend-{{ ansible_limit }}
 {% endif %}
   rules:
   - host: {{ domain }}
@@ -29,8 +28,34 @@ spec:
             name: {{ frontend_label }}-svc
             port:
               number: 80
-      - path: /api
-        pathType: Prefix
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-api-ingress-{{ ansible_limit }}
+  namespace: {{ frontend_namespace }}-{{ env_suffix }}
+  labels:
+    app: app-{{ ansible_limit }}
+  annotations:
+{% if ssl_enabled | default(false) %}
+    cert-manager.io/cluster-issuer: "letsencrypt-{{ ansible_limit }}"
+{% endif %}
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+{% if ssl_enabled | default(false) %}
+  tls:
+  - hosts:
+    - {{ domain }}
+    secretName: tls-secret-api-{{ ansible_limit }}
+{% endif %}
+  rules:
+  - host: {{ domain }}
+    http:
+      paths:
+      - path: /api(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ backend_label }}-proxy-svc
