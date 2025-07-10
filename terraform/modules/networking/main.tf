@@ -154,10 +154,11 @@ resource "google_compute_firewall" "internal_communication" {
     protocol = "icmp"
   }
 
-  source_tags = [local.tags.gke_node]
-  target_tags = [local.tags.gke_node]
-  direction   = "INGRESS"
-  priority    = 850
+  source_ranges = [var.secondary_range_pods]
+  source_tags   = [local.tags.gke_node]
+  target_tags   = [local.tags.gke_node]
+  direction     = "INGRESS"
+  priority      = 850
 
   description = "Allow all internal communication between GKE nodes"
 }

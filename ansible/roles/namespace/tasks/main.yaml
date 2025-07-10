@@ -1,9 +1,7 @@
 - name: "Create environment-specific namespaces"
   kubernetes.core.k8s:
     state: "{{ k8s_state | default('present') }}"
-    definition:
-      apiVersion: v1
-      kind: Namespace
-      metadata:
-        name: "{{ item }}-{{ env_suffix }}"
+    definition: "{{ lookup('template', 'main.yaml.j2') }}"
+  vars:
+    namespace_name: "{{ item }}-{{ env_suffix }}"
   loop: "{{ base_namespaces }}"

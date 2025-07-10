@@ -1,0 +1,5 @@
+- name: Apply Network Policies for Inter Service Communication
+  kubernetes.core.k8s:
+    state: "{{ k8s_state | default('present') }}"
+    definition: "{{ lookup('template', 'main.yaml.j2') }}"
+  when: network_policies is defined

@@ -1,0 +1,98 @@
+{% for policy in network_policies %}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ policy.name }}
+  namespace: {{ policy.namespace }}
+  labels:
+    app: network-policy
+spec:
+  podSelector:
+{% if policy.pod_selector %}
+    matchLabels:
+{% for key, value in policy.pod_selector.items() %}
+      {{ key }}: {{ value }}
+{% endfor %}
+{% else %}
+    {}
+{% endif %}
+  policyTypes:
+{% for policy_type in policy.policy_types %}
+  - {{ policy_type }}
+{% endfor %}
+{% if policy.ingress_rules is defined %}
+  ingress:
+{% for rule in policy.ingress_rules %}
+  - {% if rule.from is defined %}from:
+{% for from_rule in rule.from %}
+    - {% if from_rule.namespaceSelector is defined %}namespaceSelector:
+{% if from_rule.namespaceSelector.matchLabels is defined %}
+        matchLabels:
+{% for key, value in from_rule.namespaceSelector.matchLabels.items() %}
+          {{ key }}: {{ value }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% if from_rule.podSelector is defined %}
+      podSelector:
+        matchLabels:
+{% for key, value in from_rule.podSelector.matchLabels.items() %}
+          {{ key }}: {{ value }}
+{% endfor %}
+{% endif %}
+{% if from_rule.ipBlock is defined %}
+      ipBlock:
+        cidr: {{ from_rule.ipBlock.cidr }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if rule.ports is defined %}
+    ports:
+{% for port in rule.ports %}
+    - protocol: {{ port.protocol }}
+      port: {{ port.port }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if policy.egress_rules is defined %}
+  egress:
+{% for rule in policy.egress_rules %}
+{% if rule == {} %}
+  - {}
+{% else %}
+  - {% if rule.to is defined %}to:
+{% for to_rule in rule.to %}
+    - {% if to_rule.namespaceSelector is defined %}namespaceSelector:
+{% if to_rule.namespaceSelector.matchLabels is defined %}
+        matchLabels:
+{% for key, value in to_rule.namespaceSelector.matchLabels.items() %}
+          {{ key }}: {{ value }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% if to_rule.podSelector is defined %}
+      podSelector:
+        matchLabels:
+{% for key, value in to_rule.podSelector.matchLabels.items() %}
+          {{ key }}: {{ value }}
+{% endfor %}
+{% endif %}
+{% if to_rule.ipBlock is defined %}
+      ipBlock:
+        cidr: {{ to_rule.ipBlock.cidr }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if rule.ports is defined %}
+    ports:
+{% for port in rule.ports %}
+    - protocol: {{ port.protocol }}
+      port: {{ port.port }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}

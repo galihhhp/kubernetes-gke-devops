@@ -1,0 +1,98 @@
+k8s_state: present
+
+frontend_label: tasks-frontend
+backend_label: tasks-backend
+postgresql_label: postgresql
+
+frontend_namespace: frontend
+backend_namespace: backend
+database_namespace: database
+
+network_policies:
+  - name: allow-ingress-to-frontend
+    namespace: "{{ frontend_namespace }}-{{ env_suffix }}"
+    pod_selector:
+      app: "{{ frontend_label }}"
+    policy_types:
+      - Ingress
+      - Egress
+    ingress_rules:
+      - from:
+          - namespaceSelector:
+              matchLabels:
+                name: ingress-nginx
+        ports:
+          - protocol: TCP
+            port: 80
+    egress_rules:
+      - to:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: kube-system
+        ports:
+          - protocol: UDP
+            port: 53
+          - protocol: TCP
+            port: 53
+
+  - name: allow-backend-communication
+    namespace: "{{ backend_namespace }}-{{ env_suffix }}"
+    pod_selector:
+      app: "{{ backend_label }}"
+    policy_types:
+      - Ingress
+      - Egress
+    ingress_rules:
+      - from:
+          - namespaceSelector:
+              matchLabels:
+                name: ingress-nginx
+        ports:
+          - protocol: TCP
+            port: 3000
+    egress_rules:
+      - to:
+          - namespaceSelector:
+              matchLabels:
+                name: "{{ database_namespace }}-{{ env_suffix }}"
+        ports:
+          - protocol: TCP
+            port: 5432
+      - to:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: kube-system
+        ports:
+          - protocol: UDP
+            port: 53
+          - protocol: TCP
+            port: 53
+
+  - name: allow-database-access
+    namespace: "{{ database_namespace }}-{{ env_suffix }}"
+    pod_selector:
+      app: "{{ postgresql_label }}"
+    policy_types:
+      - Ingress
+      - Egress
+    ingress_rules:
+      - from:
+          - namespaceSelector:
+              matchLabels:
+                name: "{{ backend_namespace }}-{{ env_suffix }}"
+            podSelector:
+              matchLabels:
+                app: "{{ backend_label }}"
+        ports:
+          - protocol: TCP
+            port: 5432
+    egress_rules:
+      - to:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: kube-system
+        ports:
+          - protocol: UDP
+            port: 53
+          - protocol: TCP
+            port: 53

@@ -21,10 +21,10 @@ metadata:
     app: "{{ backend_label }}"
 type: Opaque
 stringData:
-  DB_USERNAME: "{{ backend_db_username }}"
+  DB_USER: "{{ backend_db_username }}"
   DB_PASSWORD: "{{ backend_db_password }}"
 
---- 
+---
 
 apiVersion: v1
 kind: Service
@@ -105,11 +105,11 @@ spec:
             configMapKeyRef:
               name: "{{ backend_label }}-config"
               key: DB_NAME
-        - name: DB_USERNAME
+        - name: DB_USER
           valueFrom:
             secretKeyRef:
               name: "{{ backend_label }}-secret"
-              key: DB_USERNAME
+              key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:

@@ -34,7 +34,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: app-api-ingress-{{ ansible_limit }}
-  namespace: {{ frontend_namespace }}-{{ env_suffix }}
+  namespace: {{ backend_namespace }}-{{ env_suffix }}
   labels:
     app: app-{{ ansible_limit }}
   annotations:
@@ -58,24 +58,6 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: {{ backend_label }}-proxy-svc
+            name: {{ backend_label }}-svc
             port:
               number: 80
-
----
-# Ingress cant directly reference services in different namespaces.
-# So we need to create a proxy service that points to the backend service.
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ backend_label }}-proxy-svc
-  namespace: {{ frontend_namespace }}-{{ env_suffix }}
-  labels:
-    app: {{ backend_label }}-proxy
-spec:
-  type: ExternalName
-  externalName: {{ backend_label }}-svc.{{ backend_namespace }}-{{ env_suffix }}.svc.cluster.local
-  ports:
-  - port: 80
-    targetPort: 80
-    protocol: TCP
