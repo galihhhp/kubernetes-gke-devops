@@ -5,3 +5,4 @@
     - role: postgresql
     - role: backend
     - role: frontend
+    - role: hpa

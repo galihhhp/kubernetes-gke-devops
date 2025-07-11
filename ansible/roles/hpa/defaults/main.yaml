@@ -1,0 +1,17 @@
+hpa_configurations:
+  - name: "tasks-backend"
+    deployment_name: "tasks-backend-deployment"
+    namespace: "backend-{{ env_suffix }}"
+    min_replicas: 2
+    max_replicas: 4
+    cpu_threshold: 70
+    memory_threshold: 80
+
+  - name: "tasks-frontend"
+    deployment_name: "tasks-frontend-deployment"
+    namespace: "frontend-{{ env_suffix }}"
+    min_replicas: 2
+    max_replicas: 6
+    cpu_threshold: 80
+    memory_threshold: 85
+    scale_down_window: 600

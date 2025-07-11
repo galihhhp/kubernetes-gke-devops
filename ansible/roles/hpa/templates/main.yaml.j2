@@ -1,0 +1,110 @@
+{% for hpa_config in hpa_configurations %}
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  # Unique HPA name following convention: hpa-[app-name]-[environment]
+  name: hpa-{{ hpa_config.name }}-{{ env_suffix }}
+  # HPA must be in same namespace as target deployment
+  namespace: {{ hpa_config.namespace }}  
+  # Labels for resource organization, filtering, and monitoring
+  labels:
+    app: {{ hpa_config.name }}
+
+spec:
+  # Target deployment that this HPA will automatically scale
+  scaleTargetRef:
+    # API version of the target resource (apps/v1 for Deployments)
+    apiVersion: apps/v1
+    # Type of target resource (Deployment, StatefulSet, ReplicaSet)
+    kind: Deployment
+    # EXACT name of deployment to scale - must match deployment metadata.name
+    name: {{ hpa_config.deployment_name }}
+  
+  minReplicas: {{ hpa_config.min_replicas }}
+  maxReplicas: {{ hpa_config.max_replicas }}
+  
+  # Metrics that trigger scaling decisions (multiple metrics = OR logic for scale-up)
+  metrics:
+  - # Resource-based scaling using built-in Kubernetes metrics
+    type: Resource
+    resource:
+      # Monitor CPU utilization across all pods in the deployment
+      name: cpu
+      target:
+        # Utilization type measures percentage usage vs requests
+        type: Utilization
+        
+        # Scale UP when average CPU > this threshold across all pods
+        # Scale DOWN when average CPU < this threshold for stabilization period
+        averageUtilization: {{ hpa_config.cpu_threshold | default(80) }}
+        
+  - type: Resource
+    resource:
+      # Monitor memory utilization across all pods in the deployment
+      name: memory
+      target:
+        type: Utilization
+        
+        # Memory threshold for scaling decisions
+        # Important: deployment must have memory requests defined
+        averageUtilization: {{ hpa_config.memory_threshold | default(80) }}
+  
+  # Scaling behavior controls (prevents thrashing and ensures stability)
+  behavior:
+    # Rules for scaling DOWN (removing pods)
+    scaleDown:
+      # Stabilization window: wait time before considering scale-down
+      # Prevents rapid scale-down after scale-up (300s = 5 minutes)
+      stabilizationWindowSeconds: {{ hpa_config.scale_down_window | default(300) }}
+      
+      # Scaling policies define HOW FAST pods can be removed
+      policies:
+      - # Policy type: Percent (percentage) vs Pods (absolute number)
+        type: Percent
+        
+        # Maximum percentage of pods to remove per period
+        # Conservative: only remove 10% of current pods per minute
+        value: {{ hpa_config.scale_down_percent | default(10) }}
+        
+        # Time period for this policy (60 seconds = per minute)
+        periodSeconds: 60
+        
+    # Rules for scaling UP (adding pods)
+    scaleUp:
+      # Stabilization window for scale-up (0 = immediate response to load)
+      # Fast response to traffic spikes
+      stabilizationWindowSeconds: {{ hpa_config.scale_up_window | default(0) }}
+      
+      # Scaling policies define HOW FAST pods can be added
+      policies:
+      - type: Percent
+        
+        # Maximum percentage of pods to add per period
+        # Aggressive: can double pod count per minute (100% increase)
+        value: {{ hpa_config.scale_up_percent | default(100) }}
+        
+        # Time period for this policy
+        periodSeconds: 60
+{% endfor %}
+
+# Configuration Requirements:
+# 1. Target deployment must exist with matching name
+# 2. Target deployment must have resource requests defined (cpu, memory)
+# 3. Metrics server must be running in the cluster
+# 4. hpa_configurations variable must be defined with required fields
+
+# Scaling Logic:
+# - Scale UP: triggered when ANY metric exceeds threshold
+# - Scale DOWN: triggered when ALL metrics are below threshold for stabilization period
+# - Boundaries: always respects minReplicas and maxReplicas limits
+
+# Example hpa_configurations variable:
+# hpa_configurations:
+#   - name: "frontend"
+#     deployment_name: "tasks-frontend-deployment"
+#     min_replicas: 2
+#     max_replicas: 4
+#     cpu_threshold: 70
+#     memory_threshold: 80
