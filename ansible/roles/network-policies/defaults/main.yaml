@@ -80,9 +80,10 @@ network_policies:
           - namespaceSelector:
               matchLabels:
                 name: "{{ backend_namespace }}-{{ env_suffix }}"
-            podSelector:
-              matchLabels:
-                app: "{{ backend_label }}"
+        ports:
+          - protocol: TCP
+            port: 5432
+      - from: []
         ports:
           - protocol: TCP
             port: 5432
@@ -96,3 +97,18 @@ network_policies:
             port: 53
           - protocol: TCP
             port: 53
+
+  - name: allow-ingress-to-backend
+    namespace: "{{ backend_namespace }}-{{ env_suffix }}"
+    pod_selector:
+      app: "{{ backend_label }}"
+    policy_types:
+      - Ingress
+    ingress_rules:
+      - from:
+          - namespaceSelector:
+              matchLabels:
+                name: ingress-nginx
+        ports:
+          - protocol: TCP
+            port: 3000

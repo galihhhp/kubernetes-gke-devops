@@ -82,6 +82,11 @@ spec:
     spec:
       nodeSelector:
         cloud.google.com/gke-nodepool: "{{ postgresql_database_node }}"
+      tolerations:
+      - key: "workload"
+        operator: "Equal"
+        value: "database"
+        effect: "NoSchedule"
       securityContext:
         fsGroup: 999
       initContainers:

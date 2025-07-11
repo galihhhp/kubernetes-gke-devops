@@ -15,7 +15,7 @@ spec:
   tls:
   - hosts:
     - {{ domain }}
-    secretName: tls-secret-frontend-{{ ansible_limit }}
+    secretName: tls-secret-shared-{{ ansible_limit }}
 {% endif %}
   rules:
   - host: {{ domain }}
@@ -48,7 +48,7 @@ spec:
   tls:
   - hosts:
     - {{ domain }}
-    secretName: tls-secret-api-{{ ansible_limit }}
+    secretName: tls-secret-shared-{{ ansible_limit }} 
 {% endif %}
   rules:
   - host: {{ domain }}

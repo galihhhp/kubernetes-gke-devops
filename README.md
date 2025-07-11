@@ -14,12 +14,10 @@ This repository provides a comprehensive, hands-on journey to master Kubernetes 
   - [Challenge 2: Application Deployment & Service Management](#challenge-2-application-deployment--service-management)
   - [Challenge 3: Configuration Management & Secrets](#challenge-3-configuration-management--secrets)
   - [Challenge 4: Storage & Persistent Data Management](#challenge-4-storage--persistent-data-management)
-  - [Challenge 5: Service Mesh & Advanced Networking](#challenge-5-service-mesh--advanced-networking)
-  - [Challenge 6: Monitoring, Logging & Observability](#challenge-6-monitoring-logging--observability)
-  - [Challenge 7: Auto-scaling & Resource Management](#challenge-7-auto-scaling--resource-management)
-  - [Challenge 8: Security & RBAC Implementation](#challenge-8-security--rbac-implementation)
-  - [Challenge 9: Advanced CI/CD with GitHub Actions & K8s](#challenge-9-advanced-cicd-with-github-actions--k8s)
-  - [Challenge 10: Multi-Environment & Blue-Green Deployments](#challenge-10-multi-environment--blue-green-deployments)
+  - [Challenge 5: Monitoring, Logging & Observability](#challenge-5-monitoring-logging--observability)
+  - [Challenge 6: Auto-scaling & Resource Management](#challenge-6-auto-scaling--resource-management)
+  - [Challenge 7: Advanced CI/CD with GitHub Actions & K8s](#challenge-7-advanced-cicd-with-github-actions--k8s)
+  - [Challenge 8: Multi-Environment & Blue-Green Deployments](#challenge-8-multi-environment--blue-green-deployments)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
@@ -95,7 +93,7 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 **Skills Learned:**
 
 - **Microservices deployment** patterns
-- **Service mesh basics** (preparation for Istio)
+- **Basic networking** in Kubernetes
 - **Pod lifecycle management**
 - **Resource optimization** techniques
 - **Health check** implementation
@@ -134,7 +132,7 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 - **Environment separation** using Ansible variables and templates
 - **GCP Secret Manager** integration
 - **Configuration injection** methods
-- **Security hardening** for sensitive data
+- **Basic security hardening** for sensitive data
 - **Ansible Vault** for encrypting secrets at rest
 
 **Deliverables:**
@@ -142,7 +140,7 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 - Ansible variable files (`group_vars`) for different environments
 - Secret management integration via Ansible
 - Ansible playbooks for configuration validation
-- Security audit documentation
+- Security documentation
 - Automated hot-reload implementation
 
 ---
@@ -182,42 +180,7 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 
 ---
 
-### 🔴 Challenge 5: Service Mesh & Advanced Networking
-
-**Level: EXPERT** | **Prerequisites: Challenge 4, Strong networking knowledge**
-
-**Objective:** Implement advanced networking features and service mesh capabilities for microservices communication.
-
-**What You'll Build:**
-
-- **Istio service mesh** installation and configuration
-- **Traffic management** policies (routing, load balancing)
-- **Security policies** (mTLS, authorization)
-- **Network policies** for pod-to-pod communication
-- **Ingress Gateway** configuration
-- **Circuit breaker** and **retry policies**
-- **Canary deployments** using traffic splitting
-
-**Skills Learned:**
-
-- **Service mesh architecture** and benefits
-- **Advanced networking** in Kubernetes
-- **Security policies** implementation
-- **Traffic management** strategies
-- **Observability** through service mesh
-- **Progressive delivery** techniques
-
-**Deliverables:**
-
-- Istio configuration manifests
-- Network policy definitions
-- Traffic management rules
-- Security policy implementation
-- Canary deployment scripts
-
----
-
-### 🟡 Challenge 6: Monitoring, Logging & Observability
+### 🟡 Challenge 5: Monitoring, Logging & Observability
 
 **Level: INTERMEDIATE** | **Prerequisites: Challenge 2 (can be done in parallel with others)**
 
@@ -253,9 +216,9 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 
 ---
 
-### 🟡 Challenge 7: Auto-scaling & Resource Management
+### 🟡 Challenge 6: Auto-scaling & Resource Management
 
-**Level: INTERMEDIATE** | **Prerequisites: Challenge 6**
+**Level: INTERMEDIATE** | **Prerequisites: Challenge 5**
 
 **Objective:** Implement intelligent scaling and resource management for optimal performance and cost efficiency.
 
@@ -288,43 +251,7 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 
 ---
 
-### 🔴 Challenge 8: Security & RBAC Implementation
-
-**Level: EXPERT** | **Prerequisites: Challenge 3, Security fundamentals**
-
-**Objective:** Implement comprehensive security measures including RBAC, network security, and security scanning.
-
-**What You'll Build:**
-
-- **Role-Based Access Control (RBAC)** policies
-- **Service Accounts** with least privilege principles
-- **Pod Security Standards** enforcement
-- **Network security policies**
-- **Image scanning** integration
-- **Security contexts** for containers
-- **Admission controllers** for policy enforcement
-- **Vulnerability scanning** automation
-
-**Skills Learned:**
-
-- **Kubernetes security** best practices
-- **RBAC** design and implementation
-- **Container security** hardening
-- **Network security** in Kubernetes
-- **Compliance** and **governance**
-- **Security automation** and scanning
-
-**Deliverables:**
-
-- RBAC policy definitions
-- Security policy manifests
-- Vulnerability scan reports
-- Security baseline documentation
-- Compliance audit results
-
----
-
-### 🟡 Challenge 9: Advanced CI/CD with GitHub Actions & K8s
+### 🟡 Challenge 7: Advanced CI/CD with GitHub Actions & K8s
 
 **Level: INTERMEDIATE** | **Prerequisites: Challenge 2, GitHub Actions experience**
 
@@ -360,9 +287,9 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 
 ---
 
-### 🔴 Challenge 10: Multi-Environment & Blue-Green Deployments
+### 🔴 Challenge 8: Multi-Environment & Blue-Green Deployments
 
-**Level: EXPERT** | **Prerequisites: Challenge 9, Advanced deployment concepts**
+**Level: EXPERT** | **Prerequisites: Challenge 7, Advanced deployment concepts**
 
 **Objective:** Implement sophisticated deployment strategies across multiple environments with zero-downtime deployments.
 
@@ -402,7 +329,7 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 ### 🟢 **BEGINNER PATH** (New to Kubernetes)
 
 ```
-Challenge 1 → Challenge 2 → Challenge 6 (basic monitoring)
+Challenge 1 → Challenge 2 → Challenge 5 (basic monitoring)
 ```
 
 **Focus:** Core Kubernetes concepts, basic deployments, essential monitoring
@@ -411,7 +338,7 @@ Challenge 1 → Challenge 2 → Challenge 6 (basic monitoring)
 
 ```
 Challenge 1 → Challenge 2 → Challenge 3 → Challenge 4 →
-Challenge 6 → Challenge 7 → Challenge 9
+Challenge 5 → Challenge 6 → Challenge 7
 ```
 
 **Focus:** Production-ready deployments, configuration management, CI/CD integration
@@ -419,28 +346,26 @@ Challenge 6 → Challenge 7 → Challenge 9
 ### 🔴 **EXPERT PATH** (Full production expertise)
 
 ```
-All Challenges (1-10) + Advanced customizations
+All Challenges (1-8) + Advanced customizations
 ```
 
-**Focus:** Enterprise-grade implementations, security, advanced networking
+**Focus:** Enterprise-grade implementations, advanced networking, deployment strategies
 
 ### 📚 **Recommended Sequential Order**
 
 ```
 Challenge 1 → Challenge 2 → Challenge 3 → Challenge 4 →
-Challenge 6 → Challenge 7 → Challenge 9 → Challenge 8 →
-Challenge 5 → Challenge 10
+Challenge 5 → Challenge 6 → Challenge 7 → Challenge 8
 ```
 
-**Note:** Challenge 6 (Monitoring) can be started early and run parallel with others
+**Note:** Challenge 5 (Monitoring) can be started early and run parallel with others
 
 ### 📚 **Parallel Learning Tracks**
 
 Some challenges can be done simultaneously:
 
-- **Monitoring (Challenge 6)** can start after Challenge 2
-- **Security (Challenge 8)** concepts can be learned alongside any challenge
-- **CI/CD (Challenge 9)** can be integrated throughout the journey
+- **Monitoring (Challenge 5)** can start after Challenge 2
+- **CI/CD (Challenge 7)** can be integrated throughout the journey
 
 ## Difficulty Breakdown
 
@@ -454,10 +379,10 @@ Some challenges can be done simultaneously:
 - **Prerequisites:** Completed beginner challenges, some ops experience
 - **Skills Focus:** Production configurations, automation, monitoring
 
-### 🔴 **EXPERT Challenges (3)**
+### 🔴 **EXPERT Challenges (1)**
 
 - **Prerequisites:** Strong K8s foundation, enterprise experience helpful
-- **Skills Focus:** Advanced patterns, security, optimization, business continuity
+- **Skills Focus:** Advanced deployment patterns, optimization, business continuity
 
 ## Required Tools & Setup
 
@@ -656,8 +581,8 @@ By completing these challenges, you will have:
 
 - **Production-ready Kubernetes expertise** on GKE
 - **Complete CI/CD pipeline** with GitHub Actions integration
-- **Advanced security** and **monitoring** implementations
-- **Scalable infrastructure** with proper resource management
+- **Advanced monitoring** and **resource management** implementations
+- **Scalable infrastructure** with proper configuration management
 - **Multi-environment deployment** strategies
 - **Portfolio-worthy** DevOps project demonstrating enterprise-level skills
 
@@ -668,7 +593,7 @@ This project demonstrates:
 - **Full-stack DevOps** capabilities
 - **Cloud-native** architecture design
 - **Infrastructure as Code** mastery
-- **Security-first** approach
+- **Configuration management** expertise
 - **Cost optimization** awareness
 - **Production-ready** implementations
 
