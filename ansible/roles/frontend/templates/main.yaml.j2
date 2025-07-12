@@ -94,3 +94,15 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 10
 
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: frontend-pdb
+  namespace: {{ frontend_namespace }}-{{ frontend_environment }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: {{ frontend_label }}
+
