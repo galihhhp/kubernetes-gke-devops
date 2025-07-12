@@ -1,0 +1,5 @@
+- name: Apply Storage Classes for Different Performance Needs
+  kubernetes.core.k8s:
+    state: "{{ k8s_state | default('present') }}"
+    definition: "{{ lookup('template', 'main.yaml.j2') }}"
+  tags: storage-classes

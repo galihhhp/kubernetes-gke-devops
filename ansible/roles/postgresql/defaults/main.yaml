@@ -6,3 +6,5 @@ postgresql_namespace: database
 postgresql_image: postgres:17.5-alpine
 postgresql_database_node: "{{ database_node }}"
 postgresql_environment: "{{ env_suffix }}"
+postgresql_storage_class: "balanced-ssd"
+postgresql_storage_size: "10Gi"

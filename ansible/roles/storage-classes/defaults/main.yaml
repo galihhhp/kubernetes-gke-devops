@@ -1,0 +1,7 @@
+gcp_zones:
+  - "{{ gcp_region }}-a"
+gcp_zone: "{{ gcp_region }}-a"
+storage_classes_enabled: true
+postgresql_storage_class: "balanced-ssd"
+backup_storage_class: "backup-storage"
+high_performance_storage_class: "fast-ssd"

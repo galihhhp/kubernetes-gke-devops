@@ -147,10 +147,10 @@ spec:
       name: "{{ postgresql_label }}-data" 
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "standard-rwo"
+      storageClassName: "{{ postgresql_storage_class | default('balanced-ssd') }}"
       resources:
         requests:
-          storage: 1Gi
+          storage: "{{ postgresql_storage_size | default('10Gi') }}"
 
 ---
 

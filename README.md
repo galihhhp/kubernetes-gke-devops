@@ -14,10 +14,9 @@ This repository provides a comprehensive, hands-on journey to master Kubernetes 
   - [Challenge 2: Application Deployment & Service Management](#challenge-2-application-deployment--service-management)
   - [Challenge 3: Configuration Management & Secrets](#challenge-3-configuration-management--secrets)
   - [Challenge 4: Storage & Persistent Data Management](#challenge-4-storage--persistent-data-management)
-  - [Challenge 5: Monitoring, Logging & Observability](#challenge-5-monitoring-logging--observability)
-  - [Challenge 6: Auto-scaling & Resource Management](#challenge-6-auto-scaling--resource-management)
-  - [Challenge 7: Advanced CI/CD with GitHub Actions & K8s](#challenge-7-advanced-cicd-with-github-actions--k8s)
-  - [Challenge 8: Multi-Environment & Blue-Green Deployments](#challenge-8-multi-environment--blue-green-deployments)
+  - [Challenge 5: Auto-scaling & Resource Management](#challenge-5-auto-scaling--resource-management)
+  - [Challenge 6: Basic CI/CD with GitHub Actions & K8s](#challenge-6-basic-cicd-with-github-actions--k8s)
+  - [Challenge 7: Multi-Environment & Blue-Green Deployments](#challenge-7-multi-environment--blue-green-deployments)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
@@ -37,9 +36,9 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 
 ## Challenges
 
-### 🟢 Challenge 1: K8s Foundations & GKE Cluster Setup
+### Challenge 1: K8s Foundations & GKE Cluster Setup
 
-**Level: BEGINNER** | **Prerequisites: Docker basics**
+**Prerequisites: Docker basics**
 
 **Objective:** Master Kubernetes fundamentals and create your first production-ready GKE cluster using Terraform.
 
@@ -70,13 +69,12 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 - Ansible playbooks for kubectl configuration and cluster setup
 - Automated application deployment via Ansible
 - Network security configuration through Ansible roles
-- Documentation of cluster setup process
 
 ---
 
-### 🟢 Challenge 2: Application Deployment & Service Management
+### Challenge 2: Application Deployment & Service Management
 
-**Level: BEGINNER** | **Prerequisites: Challenge 1**
+**Prerequisites: Challenge 1**
 
 **Objective:** Deploy a multi-tier application (ReactJS frontend, ElysiaJS backend) with proper service discovery and load balancing using Ansible roles.
 
@@ -105,13 +103,12 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 - Service discovery configuration
 - Auto-scaling policies
 - Health check implementation
-- Performance testing results
 
 ---
 
-### 🟡 Challenge 3: Configuration Management & Secrets
+### Challenge 3: Configuration Management & Secrets
 
-**Level: INTERMEDIATE** | **Prerequisites: Challenge 2**
+**Prerequisites: Challenge 2**
 
 **Objective:** Implement secure and flexible configuration management using ConfigMaps, Secrets, and Ansible for environment separation.
 
@@ -119,19 +116,14 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 
 - **ConfigMaps** for application configuration managed via Ansible templates
 - **Kubernetes Secrets** for sensitive data, populated by Ansible Vault
-- **Google Secret Manager** integration using Ansible roles
 - **Ansible variables (`group_vars`, `host_vars`)** for environment-specific configurations
 - **Init containers** for configuration setup
-- **Volume mounts** for configuration files
 - **Environment variable** injection patterns
-- **Configuration hot-reloading** strategies
 
 **Skills Learned:**
 
 - **Secret management** best practices in K8s
 - **Environment separation** using Ansible variables and templates
-- **GCP Secret Manager** integration
-- **Configuration injection** methods
 - **Basic security hardening** for sensitive data
 - **Ansible Vault** for encrypting secrets at rest
 
@@ -139,15 +131,14 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 
 - Ansible variable files (`group_vars`) for different environments
 - Secret management integration via Ansible
-- Ansible playbooks for configuration validation
 - Security documentation
 - Automated hot-reload implementation
 
 ---
 
-### 🟡 Challenge 4: Storage & Persistent Data Management
+### Challenge 4: Storage & Persistent Data Management
 
-**Level: INTERMEDIATE** | **Prerequisites: Challenge 3**
+**Prerequisites: Challenge 3**
 
 **Objective:** Implement persistent storage solutions for stateful applications using GKE storage options.
 
@@ -156,10 +147,7 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 - **Persistent Volumes (PV)** and **Persistent Volume Claims (PVC)**
 - **StatefulSets** for PostgreSQL database deployment, managed by an Ansible role
 - **PostgreSQL container** deployment with persistent storage
-- **Cloud Storage** integration for database backups, automated with Ansible
-- **Backup and restore** procedures for PostgreSQL data, run via playbooks
 - **Storage classes** configuration for different performance needs
-- **Volume snapshots** for data protection
 
 **Skills Learned:**
 
@@ -167,64 +155,23 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 - **Storage orchestration** in Kubernetes
 - **Database containerization** best practices
 - **Data persistence** strategies for databases
-- **PostgreSQL backup automation** with cloud storage
-- **Storage performance** optimization for databases
 
 **Deliverables:**
 
 - PostgreSQL StatefulSet configurations
 - Storage class definitions for database storage
-- Ansible playbooks for PostgreSQL backup automation
-- Automated database migration procedures
-- PostgreSQL monitoring setup via Ansible
 
 ---
 
-### 🟡 Challenge 5: Monitoring, Logging & Observability
+### Challenge 5: Auto-scaling & Resource Management
 
-**Level: INTERMEDIATE** | **Prerequisites: Challenge 2 (can be done in parallel with others)**
-
-**Objective:** Implement comprehensive monitoring and logging solutions using cloud-native tools and GCP services.
-
-**What You'll Build:**
-
-- **Prometheus** deployment using native K8s manifests
-- **Grafana** dashboards for application and cluster metrics
-- **Google Cloud Logging** integration
-- **Google Cloud Monitoring** for GKE clusters
-- **Alertmanager** configuration for incident response
-- **Jaeger** for distributed tracing
-- **Custom metrics** collection from applications
-- **Log aggregation** and analysis pipelines
-
-**Skills Learned:**
-
-- **Observability** pillars (metrics, logs, traces)
-- **Prometheus** configuration and querying
-- **Grafana** dashboard creation
-- **GCP monitoring** services integration
-- **Alert management** and escalation
-- **Distributed tracing** implementation
-
-**Deliverables:**
-
-- Monitoring stack deployment manifests
-- Custom Grafana dashboards
-- Alert rules configuration
-- Log analysis queries
-- Observability documentation
-
----
-
-### 🟡 Challenge 6: Auto-scaling & Resource Management
-
-**Level: INTERMEDIATE** | **Prerequisites: Challenge 5**
+**Prerequisites: Challenge 4**
 
 **Objective:** Implement intelligent scaling and resource management for optimal performance and cost efficiency.
 
 **What You'll Build:**
 
-- **Horizontal Pod Autoscaler (HPA)** with custom metrics
+- **Horizontal Pod Autoscaler (HPA)**
 - **Vertical Pod Autoscaler (VPA)** for resource optimization
 - **Cluster Autoscaler** configuration
 - **Node pool management** for different workload types
@@ -251,45 +198,37 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 
 ---
 
-### 🟡 Challenge 7: Advanced CI/CD with GitHub Actions & K8s
+### Challenge 6: Basic CI/CD with GitHub Actions & K8s
 
-**Level: INTERMEDIATE** | **Prerequisites: Challenge 2, GitHub Actions experience**
+**Prerequisites: Challenge 2**
 
-**Objective:** Implement sophisticated CI/CD pipelines using GitHub Actions for automated deployment to GKE clusters.
+**Objective:** Implement basic CI/CD pipelines using GitHub Actions for automated deployment to GKE clusters.
 
 **What You'll Build:**
 
-- **GitHub Actions workflows** that trigger Ansible playbooks
-- **Multi-stage deployment** pipelines (build → test → deploy) orchestrated by Ansible
-- **Environment-specific** deployment strategies using Ansible's inventory
-- **Rollback mechanisms** using Ansible
-- **Security scanning** integration in CI/CD
-- **Automated testing** for rendered K8s manifests using Ansible and tools like `kubeval`
-- **Deployment approval** workflows for production
-- **Notification systems** for deployment status, triggered from Ansible
+- **GitHub Actions workflows** for build and deploy
+- **Basic deployment** pipelines (build → deploy)
+- **Environment-specific** deployment using GitHub environments
+- **Simple rollback** mechanisms
 
 **Skills Learned:**
 
-- **Advanced GitHub Actions** workflows
-- **CI/CD pipeline** optimization for Kubernetes with Ansible
-- **Automated testing** strategies for K8s
-- **Security integration** in deployment pipelines
-- **Environment promotion** workflows
-- **Rollback automation** and **health checks**
+- **GitHub Actions** workflow basics
+- **CI/CD pipeline** fundamentals for Kubernetes
+- **Automated deployment** to GKE
+- **Environment management** in GitHub
 
 **Deliverables:**
 
-- Multi-environment GitHub Actions workflows
-- Ansible playbooks for automated testing
-- Security scanning integration via Ansible
-- Deployment approval processes
-- Ansible-based rollback automation
+- Basic GitHub Actions workflows
+- Automated deployment to multiple environments
+- Simple rollback procedures
 
 ---
 
-### 🔴 Challenge 8: Multi-Environment & Blue-Green Deployments
+### Challenge 7: Multi-Environment & Blue-Green Deployments
 
-**Level: EXPERT** | **Prerequisites: Challenge 7, Advanced deployment concepts**
+**Prerequisites: Challenge 6**
 
 **Objective:** Implement sophisticated deployment strategies across multiple environments with zero-downtime deployments.
 
@@ -326,63 +265,20 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 
 ## Learning Path Recommendations
 
-### 🟢 **BEGINNER PATH** (New to Kubernetes)
-
-```
-Challenge 1 → Challenge 2 → Challenge 5 (basic monitoring)
-```
-
-**Focus:** Core Kubernetes concepts, basic deployments, essential monitoring
-
-### 🟡 **INTERMEDIATE PATH** (Some K8s experience)
+### **Recommended Sequential Order**
 
 ```
 Challenge 1 → Challenge 2 → Challenge 3 → Challenge 4 →
 Challenge 5 → Challenge 6 → Challenge 7
 ```
 
-**Focus:** Production-ready deployments, configuration management, CI/CD integration
+**Note:** Challenge 6 (CI/CD) can be started early and run parallel with others
 
-### 🔴 **EXPERT PATH** (Full production expertise)
-
-```
-All Challenges (1-8) + Advanced customizations
-```
-
-**Focus:** Enterprise-grade implementations, advanced networking, deployment strategies
-
-### 📚 **Recommended Sequential Order**
-
-```
-Challenge 1 → Challenge 2 → Challenge 3 → Challenge 4 →
-Challenge 5 → Challenge 6 → Challenge 7 → Challenge 8
-```
-
-**Note:** Challenge 5 (Monitoring) can be started early and run parallel with others
-
-### 📚 **Parallel Learning Tracks**
+### **Parallel Learning Tracks**
 
 Some challenges can be done simultaneously:
 
-- **Monitoring (Challenge 5)** can start after Challenge 2
-- **CI/CD (Challenge 7)** can be integrated throughout the journey
-
-## Difficulty Breakdown
-
-### 🟢 **BEGINNER Challenges (2)**
-
-- **Prerequisites:** Basic Docker knowledge, willingness to learn
-- **Skills Focus:** K8s fundamentals, basic deployments
-
-### 🟡 **INTERMEDIATE Challenges (5)**
-
-- **Prerequisites:** Completed beginner challenges, some ops experience
-- **Skills Focus:** Production configurations, automation, monitoring
-
-### 🔴 **EXPERT Challenges (1)**
-
-- **Prerequisites:** Strong K8s foundation, enterprise experience helpful
-- **Skills Focus:** Advanced deployment patterns, optimization, business continuity
+- **CI/CD (Challenge 6)** can start after Challenge 2
 
 ## Required Tools & Setup
 
@@ -581,7 +477,6 @@ By completing these challenges, you will have:
 
 - **Production-ready Kubernetes expertise** on GKE
 - **Complete CI/CD pipeline** with GitHub Actions integration
-- **Advanced monitoring** and **resource management** implementations
 - **Scalable infrastructure** with proper configuration management
 - **Multi-environment deployment** strategies
 - **Portfolio-worthy** DevOps project demonstrating enterprise-level skills

@@ -1,0 +1,89 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-ssd
+  labels:
+    performance-tier: high
+    cost-tier: high
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+  replication-type: none
+  zone: {{ gcp_zone }}
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: balanced-ssd
+  labels:
+    performance-tier: medium
+    cost-tier: medium
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-balanced
+  replication-type: none
+  zone: {{ gcp_zone }}
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard-hdd
+  labels:
+    performance-tier: low
+    cost-tier: low
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-standard
+  replication-type: none
+  zone: {{ gcp_zone }}
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-local-ssd
+  labels:
+    performance-tier: extreme
+    cost-tier: high
+    locality: node-local
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+  replication-type: none
+  zone: {{ gcp_zone }}
+allowVolumeExpansion: false
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: backup-storage
+  labels:
+    performance-tier: low
+    cost-tier: very-low
+    purpose: backup
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-standard
+  replication-type: none
+  zone: {{ gcp_zone }}
+allowVolumeExpansion: true
+volumeBindingMode: Immediate
+reclaimPolicy: Retain 
