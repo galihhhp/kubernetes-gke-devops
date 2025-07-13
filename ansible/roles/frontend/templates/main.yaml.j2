@@ -69,18 +69,10 @@ spec:
         - containerPort: 80
           name: http
         env:
-        - name: API_URL
-          valueFrom:
-            configMapKeyRef:
-              name: "{{ frontend_label }}-config"
-              key: API_URL
-        resources:
-          limits:
-            cpu: "1"
-            memory: "1Gi"
-          requests:
-            cpu: "250m"
-            memory: "512Mi"
+{% for env_var in frontend_env_vars %}
+        - name: {{ env_var.name }}
+          value: {{ env_var.value | to_json }}
+{% endfor %}
         livenessProbe:
           httpGet:
             path: /
@@ -105,4 +97,24 @@ spec:
   selector:
     matchLabels:
       app: {{ frontend_label }}
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: frontend-rollback
+  namespace: {{ frontend_namespace }}-{{ frontend_environment }}
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: rollback
+        image: {{ frontend_image }}
+        command: ["npm", "run", "rollback"]
+        env:
+{% for env_var in frontend_env_vars %}
+          - name: {{ env_var.name }}
+            value: {{ env_var.value | to_json }}
+{% endfor %}
 

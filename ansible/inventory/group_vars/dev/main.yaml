@@ -5,3 +5,5 @@ app_db_name: dev_db
 app_db_port: 5432
 app_db_host: postgresql-svc.database-dev.svc.cluster.local
 api_url: https://dev.kubernetes.p6u.site/api
+FEATURE_EDIT_TASK: "true"
+FEATURE_DELETE_TASK: "false"

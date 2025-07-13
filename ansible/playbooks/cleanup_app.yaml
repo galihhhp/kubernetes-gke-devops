@@ -4,6 +4,7 @@
   vars:
     k8s_state: absent
   roles:
+    - role: hpa
     - role: frontend
     - role: backend
     - role: postgresql

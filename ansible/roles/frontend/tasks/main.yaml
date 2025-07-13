@@ -1,3 +1,15 @@
+- name: Delete existing frontend jobs if present
+  kubernetes.core.k8s:
+    state: absent
+    kind: Job
+    name: "frontend-{{ item }}"
+    namespace: "{{ frontend_namespace }}-{{ frontend_environment }}"
+  register: delete_jobs_result
+  failed_when: (delete_jobs_result is failed) and ('NotFound' not in delete_jobs_result.msg)
+  loop:
+    - rollback
+    - migrate
+
 - name: Apply Frontend Manifest (Deployment, ConfigMap, Service, and Secret)
   kubernetes.core.k8s:
     state: "{{ k8s_state | default('present') }}"

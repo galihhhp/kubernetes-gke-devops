@@ -6,5 +6,20 @@ backend_db_username: "{{ db_username }}"
 backend_db_password: "{{ db_password }}"
 backend_app_node: "{{ app_node }}"
 backend_namespace: backend
-backend_image: galihhhp/elysia-backend:1.2
+backend_image: galihhhp/elysia-backend:1.4
 backend_environment: "{{ env_suffix }}"
+backend_env_vars:
+  - name: DB_HOST
+    value: "{{ backend_db_host }}"
+  - name: DB_PORT
+    value: "{{ backend_db_port }}"
+  - name: DB_NAME
+    value: "{{ backend_db_name }}"
+  - name: DB_USER
+    value: "{{ backend_db_username }}"
+  - name: DB_PASSWORD
+    value: "{{ backend_db_password }}"
+  - name: VITE_FEATURE_EDIT_TASK
+    value: "{{ FEATURE_EDIT_TASK }}"
+  - name: VITE_FEATURE_DELETE_TASK
+    value: "{{ FEATURE_DELETE_TASK }}"

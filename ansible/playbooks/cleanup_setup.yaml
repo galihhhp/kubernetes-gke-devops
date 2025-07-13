@@ -11,6 +11,7 @@
       - ingress-nginx
   roles:
     - role: namespace
+    - role: storage-classes
     - role: network-policies
     - role: cert-manager-issuer
     - role: ingress-nginx

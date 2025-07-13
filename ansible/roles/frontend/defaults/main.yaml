@@ -2,5 +2,12 @@ frontend_label: tasks-frontend
 frontend_api_url: "{{ api_url }}"
 frontend_app_node: "{{ app_node }}"
 frontend_namespace: frontend
-frontend_image: galihhhp/react-frontend:1.4
+frontend_image: galihhhp/react-frontend:1.7
 frontend_environment: "{{ env_suffix }}"
+frontend_env_vars:
+  - name: API_URL
+    value: "{{ frontend_api_url }}"
+  - name: VITE_FEATURE_EDIT_TASK
+    value: "{{ FEATURE_EDIT_TASK }}"
+  - name: VITE_FEATURE_DELETE_TASK
+    value: "{{ FEATURE_DELETE_TASK }}"

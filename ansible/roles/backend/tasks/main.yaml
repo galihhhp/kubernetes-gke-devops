@@ -1,3 +1,15 @@
+- name: Delete existing backend jobs if present
+  kubernetes.core.k8s:
+    state: absent
+    kind: Job
+    name: "backend-{{ item }}"
+    namespace: "{{ backend_namespace }}-{{ backend_environment }}"
+  register: delete_jobs_result
+  failed_when: (delete_jobs_result is failed) and ('NotFound' not in delete_jobs_result.msg)
+  loop:
+    - rollback
+    - migrate
+
 - name: Apply Backend Manifest (Deployment, ConfigMap, Service, and Secret)
   kubernetes.core.k8s:
     state: "{{ k8s_state | default('present') }}"

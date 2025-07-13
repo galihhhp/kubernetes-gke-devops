@@ -238,7 +238,6 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 - **Blue-Green deployment** strategies
 - **Canary releases** with traffic shifting
 - **Feature flags** integration
-- **Environment promotion** pipelines
 - **Database migration** strategies
 - **Rollback mechanisms** and **health checks**
 

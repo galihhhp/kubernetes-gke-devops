@@ -89,31 +89,10 @@ spec:
         - containerPort: 3000
           name: http
         env:
-        - name: DB_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: "{{ backend_label }}-config"
-              key: DB_HOST
-        - name: DB_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: "{{ backend_label }}-config"
-              key: DB_PORT
-        - name: DB_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: "{{ backend_label }}-config"
-              key: DB_NAME
-        - name: DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: "{{ backend_label }}-secret"
-              key: DB_USER
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: "{{ backend_label }}-secret"
-              key: DB_PASSWORD
+{% for env_var in backend_env_vars %}
+        - name: {{ env_var.name }}
+          value: {{ env_var.value | to_json }}
+{% endfor %}
         resources:
           limits:
             cpu: "1"
@@ -145,3 +124,56 @@ spec:
   selector:
     matchLabels:
       app: {{ backend_label }}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ backend_label }}-feature-flags"
+  namespace: "{{ backend_namespace }}-{{ backend_environment }}"
+data:
+  FEATURE_X_ENABLED: "false"
+  FEATURE_Y_ENABLED: "true"
+  
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backend-migrate
+  namespace: {{ backend_namespace }}-{{ backend_environment }}
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: migrate
+        image: {{ backend_image }}
+        command: ["npm", "run", "migrate"]
+        env:
+{% for env_var in backend_env_vars %}
+        - name: {{ env_var.name }}
+          value: {{ env_var.value | to_json }}
+{% endfor %}
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backend-rollback
+  namespace: {{ backend_namespace }}-{{ backend_environment }}
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: rollback
+        image: {{ backend_image }}
+        command: ["npm", "run", "rollback"]
+        env:
+{% for env_var in backend_env_vars %}
+        - name: {{ env_var.name }}
+          value: {{ env_var.value | to_json }}
+{% endfor %}

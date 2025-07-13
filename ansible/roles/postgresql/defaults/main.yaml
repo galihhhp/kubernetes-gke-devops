@@ -8,3 +8,9 @@ postgresql_database_node: "{{ database_node }}"
 postgresql_environment: "{{ env_suffix }}"
 postgresql_storage_class: "balanced-ssd"
 postgresql_storage_size: "10Gi"
+postgresql_main_table_name: "main_table"
+postgresql_main_table_schema: |
+  CREATE TABLE IF NOT EXISTS {{ postgresql_main_table_name }} (
+    id SERIAL PRIMARY KEY,
+    task TEXT NOT NULL
+  );
