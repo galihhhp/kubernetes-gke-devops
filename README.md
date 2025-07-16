@@ -1,11 +1,9 @@
 # Kubernetes GKE DevOps
 
-## Overview
-
-This repository provides a comprehensive, hands-on journey to master Kubernetes on Google Kubernetes Engine (GKE). Building upon your existing knowledge of Docker, Terraform, Ansible, and GitHub Actions, this challenge series will take you from K8s fundamentals to advanced production-ready deployments.
-
 ## Table of Contents
 
+- [Overview](#overview)
+- [Table of Contents](#table-of-contents)
 - [Project Overview](#project-overview)
 - [Prerequisites](#prerequisites)
 - [Directory Structure](#directory-structure)
@@ -16,10 +14,21 @@ This repository provides a comprehensive, hands-on journey to master Kubernetes 
   - [Challenge 4: Storage & Persistent Data Management](#challenge-4-storage--persistent-data-management)
   - [Challenge 5: Auto-scaling & Resource Management](#challenge-5-auto-scaling--resource-management)
   - [Challenge 6: Basic CI/CD with GitHub Actions & K8s](#challenge-6-basic-cicd-with-github-actions--k8s)
-  - [Challenge 7: Multi-Environment & Blue-Green Deployments](#challenge-7-multi-environment--blue-green-deployments)
+  - [Challenge 7: Multi-Environment Deployments](#challenge-7-multi-environment-deployments)
 - [Usage](#usage)
+- [Learning Path Recommendations](#learning-path-recommendations)
+- [Required Tools & Setup](#required-tools--setup)
+- [Getting Started](#getting-started)
+- [Terraform Application Workflow](#terraform-application-workflow)
+- [Key Learning Outcomes](#key-learning-outcomes)
+- [Portfolio Highlights](#portfolio-highlights)
+- [Manual Rollback with Ansible](#manual-rollback-with-ansible)
 - [Contributing](#contributing)
 - [License](#license)
+
+## Overview
+
+This repository provides a comprehensive, hands-on journey to master Kubernetes on Google Kubernetes Engine (GKE). Building upon your existing knowledge of Docker, Terraform, Ansible, and GitHub Actions, this challenge series will take you from K8s fundamentals to advanced production-ready deployments.
 
 ## Project Overview
 
@@ -226,26 +235,22 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 
 ---
 
-### Challenge 7: Multi-Environment & Blue-Green Deployments
+### Challenge 7: Multi-Environment Deployments
 
 **Prerequisites: Challenge 6**
 
-**Objective:** Implement sophisticated deployment strategies across multiple environments with zero-downtime deployments.
+**Objective:** Implement deployment strategies across multiple environments.
 
 **What You'll Build:**
 
 - **Multi-environment** cluster setup (dev/staging/prod)
-- **Blue-Green deployment** strategies
-- **Canary releases** with traffic shifting
 - **Feature flags** integration
 - **Database migration** strategies
 - **Rollback mechanisms** and **health checks**
 
 **Skills Learned:**
 
-- **Advanced deployment** patterns
 - **Environment management** strategies
-- **Zero-downtime deployment** techniques
 - **Risk mitigation** in deployments
 - **Feature flag** implementation
 - **Database versioning** in K8s
@@ -253,8 +258,7 @@ This project focuses on mastering Kubernetes using Google Kubernetes Engine (GKE
 **Deliverables:**
 
 - Multi-environment configurations
-- Ansible playbooks for blue-green deployments
-- Automated canary release via Ansible
+- Ansible playbooks for environment management
 - PostgreSQL database migration automation
 - Deployment strategy documentation
 
@@ -490,6 +494,24 @@ This project demonstrates:
 - **Configuration management** expertise
 - **Cost optimization** awareness
 - **Production-ready** implementations
+
+## Manual Rollback with Ansible
+
+You can trigger a manual rollback for the frontend or backend using Ansible by passing an extra variable when running the playbook. This will execute the rollback job defined in your playbook/tasks.
+
+### Rollback Backend
+
+```bash
+ansible-playbook ansible/playbooks/app_deployment.yaml -e "trigger_backend_rollback=true"
+```
+
+### Rollback Frontend
+
+```bash
+ansible-playbook ansible/playbooks/app_deployment.yaml -e "trigger_frontend_rollback=true"
+```
+
+This will only run the rollback job for the selected component. By default, rollback jobs are not executed unless you explicitly set the variable to `true`.
 
 ```
 

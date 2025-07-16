@@ -1,3 +1,19 @@
+- name: Trigger backend migration job (manual)
+  kubernetes.core.k8s:
+    state: present
+    kind: Job
+    name: backend-migrate
+    namespace: "{{ backend_namespace }}-{{ backend_environment }}"
+  when: trigger_backend_migrate | default(false)
+
+- name: Trigger backend rollback job (manual)
+  kubernetes.core.k8s:
+    state: present
+    kind: Job
+    name: backend-rollback
+    namespace: "{{ backend_namespace }}-{{ backend_environment }}"
+  when: trigger_backend_rollback | default(false)
+
 - name: Delete existing backend jobs if present
   kubernetes.core.k8s:
     state: absent
