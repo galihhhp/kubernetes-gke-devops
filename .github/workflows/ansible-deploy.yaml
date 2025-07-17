@@ -38,15 +38,31 @@ jobs:
       - name: Create inventory directory
         run: mkdir -p ansible/inventory
 
+      - name: Create Ansible inventory file
+        run: |
+          cat > ansible/inventory/hosts.ini << EOF
+          ${{ secrets.ANSIBLE_INVENTORY }}
+          EOF
+          chmod 600 ansible/inventory/hosts.ini
+
+      - name: Print working directory
+        run: pwd
+
+      - name: List group_vars/prod
+        run: ls -l ansible/inventory/group_vars/prod
+
+      - name: Print inventory file
+        run: cat ansible/inventory/hosts.ini
+
       - name: Deploy App
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ansible/playbooks/app_deployment.yaml
           directory: ./
           key: ${{ secrets.DEV_SSH_KEY }}
-          inventory: ${{ secrets.ANSIBLE_INVENTORY }}
+          inventory: ansible/inventory/hosts.ini
           vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-          options: --limit prod -e env_suffix=prod
+          options: --limit prod
 
       - name: Cleanup
         if: always()
