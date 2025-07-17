@@ -1,0 +1,71 @@
+name: Ansible CI/CD Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ansible-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Ansible & Lint
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible ansible-lint
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY_PROD }}
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
+          location: ${{ secrets.GKE_CLUSTER_LOCATION }}
+
+      - name: Create inventory directory
+        run: mkdir -p ansible/inventory
+
+      - name: Create Ansible inventory file
+        run: |
+          cat > ansible/inventory/hosts.ini << EOF
+          ${{ secrets.ANSIBLE_INVENTORY }}
+          EOF
+          chmod 600 ansible/inventory/hosts.ini
+
+      - name: Create Vault Password File
+        run: |
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
+          chmod 600 vault_pass.txt
+
+      - name: Syntax Check
+        run: |
+          ansible-playbook ansible/playbooks/app_deployment.yaml --syntax-check --vault-password-file vault_pass.txt
+
+      - name: Deploy App
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: ansible/playbooks/app_deployment.yaml
+          directory: ./
+          key: ${{ secrets.DEV_SSH_KEY }}
+          inventory: ansible/inventory/hosts.ini
+          vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          options: --limit prod
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f vault_pass.txt
+          rm -f ansible/inventory/hosts.ini
