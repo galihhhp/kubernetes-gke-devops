@@ -35,30 +35,16 @@ jobs:
           cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
           location: ${{ secrets.GKE_CLUSTER_LOCATION }}
 
-      - name: Create inventory directory
-        run: mkdir -p ansible/inventory
-
-      - name: Create Ansible inventory file
+      - name: Create proper inventory structure
         run: |
-          echo "[prod]" > ansible/inventory/hosts
-          echo "localhost ansible_connection=local" >> ansible/inventory/hosts
-          chmod 644 ansible/inventory/hosts
+          mkdir -p inventory/group_vars/prod
 
-      - name: Print working directory and verify files
-        run: |
-          pwd
-          echo "=== Inventory Structure ==="
-          find ansible -type f -name "hosts" -o -name "*.yaml" -o -name "*.yml"
-          echo "=== Inventory Content ==="
-          cat ansible/inventory/hosts
-          echo "=== Group Vars ==="
-          if [ -d ansible/inventory/group_vars/prod ]; then
-            ls -la ansible/inventory/group_vars/prod/
-            echo "=== main.yaml content ==="
-            cat ansible/inventory/group_vars/prod/main.yaml
-          else
-            echo "No group_vars/prod directory found"
-          fi
+          echo "[prod]" > inventory/hosts
+          echo "localhost ansible_connection=local" >> inventory/hosts
+
+          cp -r ansible/inventory/group_vars/prod/* inventory/group_vars/prod/
+          tree inventory/ || find inventory/ -type f
+          cat inventory/group_vars/prod/main.yaml
 
       - name: Test Ansible connection
         run: |
@@ -69,7 +55,7 @@ jobs:
         with:
           playbook: ansible/playbooks/app_deployment.yaml
           directory: ./
-          inventory: ansible/inventory/hosts
+          inventory: inventory/hosts
           vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
           options: --limit prod
 
@@ -77,4 +63,4 @@ jobs:
         if: always()
         run: |
           rm -f vault_pass.txt
-          rm -f ansible/inventory/hosts
+          rm -rf inventory/
