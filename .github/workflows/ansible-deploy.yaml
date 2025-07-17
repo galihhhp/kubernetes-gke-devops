@@ -46,7 +46,7 @@ jobs:
           key: ${{ secrets.DEV_SSH_KEY }}
           inventory: ${{ secrets.ANSIBLE_INVENTORY }}
           vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-          options: --limit prod
+          options: --limit prod -e env_suffix=prod
 
       - name: Cleanup
         if: always()
