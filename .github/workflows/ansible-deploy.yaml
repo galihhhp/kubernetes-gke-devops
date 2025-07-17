@@ -71,7 +71,7 @@ jobs:
           directory: ./
           inventory: ansible/inventory/hosts.ini
           vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-          options: --limit prod
+          # options: --limit prod
 
       - name: Cleanup
         if: always()
