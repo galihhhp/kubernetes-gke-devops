@@ -37,14 +37,14 @@ jobs:
 
       - name: Create proper inventory structure
         run: |
-          mkdir -p inventory/group_vars/prod
+          mkdir -p ansible/inventory/group_vars/prod
 
-          echo "[prod]" > inventory/hosts
-          echo "localhost ansible_connection=local" >> inventory/hosts
+          echo "[prod]" > ansible/inventory/hosts
+          echo "localhost ansible_connection=local" >> ansible/inventory/hosts
 
-          cp -r ansible/inventory/group_vars/prod/* inventory/group_vars/prod/
-          tree inventory/ || find inventory/ -type f
-          cat inventory/group_vars/prod/main.yaml
+          cp -r ansible/inventory/group_vars/prod/* ansible/inventory/group_vars/prod/
+          tree ansible/inventory/ || find ansible/inventory/ -type f
+          cat ansible/inventory/group_vars/prod/main.yaml
 
       - name: Test Ansible connection
         run: |
@@ -55,7 +55,7 @@ jobs:
         with:
           playbook: ansible/playbooks/app_deployment.yaml
           directory: ./
-          inventory: inventory/hosts
+          inventory: ansible/inventory/hosts
           vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
           options: --limit prod
 
@@ -63,4 +63,4 @@ jobs:
         if: always()
         run: |
           rm -f vault_pass.txt
-          rm -rf inventory/
+          rm -rf ansible/inventory/
