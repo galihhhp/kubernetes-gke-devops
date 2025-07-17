@@ -60,7 +60,9 @@ jobs:
 
       - name: Test Ansible connection
         run: |
-          ansible all -i ansible/inventory/hosts.ini -m ping --limit prod
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
+          ansible all -i ansible/inventory/hosts.ini -m ping --limit prod --vault-password-file vault_pass.txt
+          rm -f vault_pass.txt
 
       - name: Deploy App
         uses: dawidd6/action-ansible-playbook@v2
