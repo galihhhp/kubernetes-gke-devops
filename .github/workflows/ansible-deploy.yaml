@@ -40,41 +40,41 @@ jobs:
 
       - name: Create Ansible inventory file
         run: |
-          echo "[prod]" > ansible/inventory/hosts.ini
-          echo "localhost ansible_connection=local" >> ansible/inventory/hosts.ini
-          chmod 600 ansible/inventory/hosts.ini
+          echo "[prod]" > ansible/inventory/hosts
+          echo "localhost ansible_connection=local" >> ansible/inventory/hosts
+          chmod 644 ansible/inventory/hosts
 
       - name: Print working directory and verify files
         run: |
           pwd
           echo "=== Inventory Structure ==="
-          find ansible -type f -name "*.ini" -o -name "*.yaml" -o -name "*.yml"
+          find ansible -type f -name "hosts" -o -name "*.yaml" -o -name "*.yml"
           echo "=== Inventory Content ==="
-          cat ansible/inventory/hosts.ini
+          cat ansible/inventory/hosts
           echo "=== Group Vars ==="
           if [ -d ansible/inventory/group_vars/prod ]; then
             ls -la ansible/inventory/group_vars/prod/
+            echo "=== main.yaml content ==="
+            cat ansible/inventory/group_vars/prod/main.yaml
           else
             echo "No group_vars/prod directory found"
           fi
 
       - name: Test Ansible connection
         run: |
-          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
-          ansible all -i ansible/inventory/hosts.ini -m ping --limit prod --vault-password-file vault_pass.txt
-          rm -f vault_pass.txt
+          ansible all -i ansible/inventory/hosts -m ping --limit prod
 
       - name: Deploy App
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ansible/playbooks/app_deployment.yaml
           directory: ./
-          inventory: ansible/inventory/hosts.ini
+          inventory: ansible/inventory/hosts
           vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-          # options: --limit prod
+          options: --limit prod
 
       - name: Cleanup
         if: always()
         run: |
           rm -f vault_pass.txt
-          rm -f ansible/inventory/hosts.ini
+          rm -f ansible/inventory/hosts
