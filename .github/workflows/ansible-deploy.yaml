@@ -44,21 +44,29 @@ jobs:
           echo "localhost ansible_connection=local" >> ansible/inventory/hosts.ini
           chmod 600 ansible/inventory/hosts.ini
 
-      - name: Print working directory
-        run: pwd
+      - name: Print working directory and verify files
+        run: |
+          pwd
+          echo "=== Inventory Structure ==="
+          find ansible -type f -name "*.ini" -o -name "*.yaml" -o -name "*.yml"
+          echo "=== Inventory Content ==="
+          cat ansible/inventory/hosts.ini
+          echo "=== Group Vars ==="
+          if [ -d ansible/inventory/group_vars/prod ]; then
+            ls -la ansible/inventory/group_vars/prod/
+          else
+            echo "No group_vars/prod directory found"
+          fi
 
-      - name: List group_vars/prod
-        run: ls -l ansible/inventory/group_vars/prod
-
-      - name: Print inventory file
-        run: cat ansible/inventory/hosts.ini
+      - name: Test Ansible connection
+        run: |
+          ansible all -i ansible/inventory/hosts.ini -m ping --limit prod
 
       - name: Deploy App
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ansible/playbooks/app_deployment.yaml
           directory: ./
-          key: ${{ secrets.DEV_SSH_KEY }}
           inventory: ansible/inventory/hosts.ini
           vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
           options: --limit prod
