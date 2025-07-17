@@ -38,29 +38,13 @@ jobs:
       - name: Create inventory directory
         run: mkdir -p ansible/inventory
 
-      - name: Create Ansible inventory file
-        run: |
-          cat > ansible/inventory/hosts.ini << EOF
-          ${{ secrets.ANSIBLE_INVENTORY }}
-          EOF
-          chmod 600 ansible/inventory/hosts.ini
-
-      - name: Create Vault Password File
-        run: |
-          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
-          chmod 600 vault_pass.txt
-
-      - name: Syntax Check
-        run: |
-          ansible-playbook ansible/playbooks/app_deployment.yaml --syntax-check --vault-password-file vault_pass.txt
-
       - name: Deploy App
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ansible/playbooks/app_deployment.yaml
           directory: ./
           key: ${{ secrets.DEV_SSH_KEY }}
-          inventory: ansible/inventory/hosts.ini
+          inventory: ${{ secrets.ANSIBLE_INVENTORY }}
           vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
           options: --limit prod
 
