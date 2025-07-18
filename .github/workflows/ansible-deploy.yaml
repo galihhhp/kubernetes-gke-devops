@@ -48,6 +48,10 @@ jobs:
         run: |
           ansible all -i ansible/inventory/hosts -m ping --limit prod
 
+      - name: Install cert-manager CRDs
+        run: |
+          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.4/cert-manager.crds.yaml
+
       - name: Setup Cluster
         env:
           ANSIBLE_PYTHON_INTERPRETER: /opt/hostedtoolcache/Python/3.10.18/x64/bin/python
