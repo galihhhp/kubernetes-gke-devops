@@ -49,6 +49,8 @@ jobs:
           ansible all -i ansible/inventory/hosts -m ping --limit prod
 
       - name: Deploy App (Alternative - Direct Command)
+        env:
+          ANSIBLE_PYTHON_INTERPRETER: /opt/hostedtoolcache/Python/3.10.18/x64/bin/python
         run: |
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
           chmod 600 vault_pass.txt
