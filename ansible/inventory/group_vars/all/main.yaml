@@ -1,5 +1,4 @@
 email: galihhhp.work@gmail.com
 app_node: app-development-node-pool
-database_node: database-development-node-pool
 ssl_enabled: true
 gcp_region: asia-southeast2

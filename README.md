@@ -1,5 +1,17 @@
 # Kubernetes GKE DevOps
 
+# Setup Instructions
+
+Before running any CI/CD pipeline or GitHub Actions, you must run the script at `.vscode/notes/create-terraform-sa.sh`.
+
+This script will:
+
+- Create the required service account for Terraform automation
+- Assign all necessary project and bucket roles
+- Generate a key file (`terraform-ci-prod-key.json`) you need to upload to your GitHub repository secrets as `GCP_SA_KEY_PROD`
+
+**You must complete this step first, or your CI/CD will not work.**
+
 ## Table of Contents
 
 - [Overview](#overview)

@@ -7,3 +7,4 @@ app_db_host: postgresql-svc.database-dev.svc.cluster.local
 api_url: https://dev.kubernetes.p6u.site/api
 FEATURE_EDIT_TASK: "true"
 FEATURE_DELETE_TASK: "false"
+database_node: database-development-node-pool

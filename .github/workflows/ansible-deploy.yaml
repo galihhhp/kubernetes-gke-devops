@@ -42,32 +42,7 @@ jobs:
           echo "[prod]" > inventory/hosts
           echo "localhost ansible_connection=local" >> inventory/hosts
 
-          cp -r ansible/inventory/group_vars/prod/* inventory/group_vars/prod/
-
-          echo "=== Inventory Structure ==="
-          tree inventory/ || find inventory/ -type f
-          echo "=== Group vars content ==="
-          cat inventory/group_vars/prod/main.yaml
-
-      - name: Print working directory and verify files
-        run: |
-          pwd
-          echo "=== Current directory structure ==="
-          ls -la
-          echo "=== Inventory Structure ==="
-          if [ -d inventory ]; then
-            find inventory -type f -name "hosts" -o -name "*.yaml" -o -name "*.yml"
-            echo "=== Inventory Content ==="
-            cat inventory/hosts
-            echo "=== Group Vars ==="
-            if [ -d inventory/group_vars/prod ]; then
-              ls -la inventory/group_vars/prod/
-              echo "=== main.yaml content ==="
-              cat inventory/group_vars/prod/main.yaml
-            fi
-          else
-            echo "No inventory directory found"
-          fi
+          cp -r ansible/inventory/group_vars/* inventory/group_vars/
 
       - name: Test Ansible connection
         run: |

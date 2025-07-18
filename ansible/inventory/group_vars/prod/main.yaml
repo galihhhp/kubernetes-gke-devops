@@ -8,3 +8,4 @@ api_url: https://kubernetes.p6u.site/api
 ssl_enabled: true
 FEATURE_EDIT_TASK: "false"
 FEATURE_DELETE_TASK: "false"
+database_node: database-production-node-pool
