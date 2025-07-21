@@ -2,7 +2,7 @@
 
 # Setup Instructions
 
-Before running any CI/CD pipeline or GitHub Actions, you must run the script at `.vscode/notes/create-terraform-sa.sh`.
+Before running any CI/CD pipeline or GitHub Actions, you must run the script at `script/create-terraform-sa.sh`.
 
 This script will:
 
